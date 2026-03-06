@@ -10,6 +10,7 @@ export function TemplateBrowser() {
     const router = useRouter();
     const utils = api.useUtils();
     const [searchQuery, setSearchQuery] = useState("");
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: cards = [], isLoading: isCardsLoading } = api.template.getAll.useQuery();
     const { data: session, isPending: isSessionLoading } = authClient.useSession();
 
@@ -27,23 +28,26 @@ export function TemplateBrowser() {
     );
 
     return (
-        <main className="flex h-screen w-full bg-black p-[2px] font-sans overflow-hidden text-sm">
+        <main className="flex flex-col md:flex-row h-dvh w-full bg-black md:p-[2px] font-sans overflow-hidden text-sm">
+            {/* Mobile Header */}
+            <div className="md:hidden flex items-center justify-between p-4 bg-[#454545] text-white shrink-0">
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider w-full items-center">
+                    <span>LIBRARY 01</span>
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="px-3 py-1 border border-gray-500 rounded hover:bg-white hover:text-black transition-colors"
+                    >
+                        {isMobileMenuOpen ? "CLOSE" : "MENU"}
+                    </button>
+                </div>
+            </div>
+
             {/* Left Sidebar */}
-            <aside className="w-[280px] bg-[#454545] text-white flex flex-col justify-between p-6 h-full border-r-2 border-black shrink-0 relative">
+            <aside className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex w-full md:w-[280px] bg-[#454545] text-white flex-col justify-between p-6 md:h-full border-b-2 md:border-b-0 md:border-r-2 border-black shrink-0 relative flex-1 md:flex-none overflow-y-auto`}>
                 <div>
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider mb-8">
+                    <div className="hidden md:flex justify-between text-[11px] font-bold uppercase tracking-wider mb-8">
                         <span>LIBRARY</span>
                         <span>01</span>
-                    </div>
-
-                    <div className="mb-8">
-                        <input
-                            type="text"
-                            placeholder="SEARCH TEMPLATES..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-gray-500 text-white placeholder-gray-500 text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors"
-                        />
                     </div>
 
                     <nav className="flex flex-col space-y-5 text-[13px] font-extrabold tracking-wide">
@@ -93,7 +97,20 @@ export function TemplateBrowser() {
             </aside>
 
             {/* Middle Grid */}
-            <section className="flex-1 bg-black overflow-y-auto px-[2px]">
+            <section className={`${isMobileMenuOpen ? "hidden" : "block"} md:block flex-1 bg-black overflow-y-auto px-[2px] pb-[2px] md:pb-0 relative`}>
+                <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-md p-6 md:p-8 flex flex-col md:flex-row gap-4 justify-between md:items-end border-b border-[#333] mb-[2px]">
+                    <h1 className="text-xl md:text-3xl font-bold uppercase tracking-widest text-[#EAE8E3]">Templates</h1>
+                    <div className="w-full md:w-[300px]">
+                        <input
+                            type="text"
+                            placeholder="SEARCH TEMPLATES..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-transparent border-b-2 border-gray-500 text-white placeholder-gray-500 text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors"
+                        />
+                    </div>
+                </div>
+
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full text-white text-sm font-bold uppercase tracking-wider">
                         LOADING...

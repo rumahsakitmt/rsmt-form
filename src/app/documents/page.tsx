@@ -9,14 +9,15 @@ export default function DocumentsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedTemplate, setSelectedTemplate] = useState("");
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const { data: documents = [], isLoading: isDocsLoading } = api.document.getAll.useQuery();
     const { data: session, isPending: isSessionLoading } = authClient.useSession();
 
     const isLoading = isDocsLoading || isSessionLoading;
 
-    const uniqueCategories = Array.from(new Set(documents.map(d => d.template?.category).filter(Boolean))) as string[];
-    const uniqueTemplates = Array.from(new Set(documents.map(d => d.template?.title).filter(Boolean))) as string[];
+    const uniqueCategories = Array.from(new Set(documents.map(d => d.template?.category).filter(Boolean)));
+    const uniqueTemplates = Array.from(new Set(documents.map(d => d.template?.title).filter(Boolean)));
 
     const filteredDocs = documents.filter((doc) => {
         const matchesSearch = !searchQuery ||
@@ -30,43 +31,26 @@ export default function DocumentsPage() {
     });
 
     return (
-        <main className="flex h-screen w-full bg-black p-[2px] font-sans overflow-hidden text-sm">
+        <main className="flex flex-col md:flex-row h-dvh w-full bg-black md:p-[2px] font-sans overflow-hidden text-sm">
+            {/* Mobile Header */}
+            <div className="md:hidden flex items-center justify-between p-4 bg-[#454545] text-white shrink-0">
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider w-full items-center">
+                    <span>LIBRARY 01</span>
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="px-3 py-1 border border-gray-500 rounded hover:bg-white hover:text-black transition-colors"
+                    >
+                        {isMobileMenuOpen ? "CLOSE" : "MENU"}
+                    </button>
+                </div>
+            </div>
+
             {/* Left Sidebar */}
-            <aside className="w-[280px] bg-[#454545] text-white flex flex-col justify-between p-6 h-full border-r-2 border-black shrink-0 relative">
+            <aside className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex w-full md:w-[280px] bg-[#454545] text-white flex-col justify-between p-6 md:h-full border-b-2 md:border-b-0 md:border-r-2 border-black shrink-0 relative flex-1 md:flex-none overflow-y-auto`}>
                 <div>
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider mb-8">
+                    <div className="hidden md:flex justify-between text-[11px] font-bold uppercase tracking-wider mb-8">
                         <span>LIBRARY</span>
                         <span>01</span>
-                    </div>
-
-                    <div className="mb-8 space-y-4">
-                        <input
-                            type="text"
-                            placeholder="SEARCH DOCUMENTS..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-gray-500 text-white placeholder-gray-500 text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors"
-                        />
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors cursor-pointer"
-                        >
-                            <option value="" className="bg-[#454545]">ALL CATEGORIES</option>
-                            {uniqueCategories.map(cat => (
-                                <option key={cat} value={cat} className="bg-[#454545]">{cat}</option>
-                            ))}
-                        </select>
-                        <select
-                            value={selectedTemplate}
-                            onChange={(e) => setSelectedTemplate(e.target.value)}
-                            className="w-full bg-transparent border-b-2 border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors cursor-pointer"
-                        >
-                            <option value="" className="bg-[#454545]">ALL TEMPLATES</option>
-                            {uniqueTemplates.map(tpl => (
-                                <option key={tpl} value={tpl} className="bg-[#454545]">{tpl}</option>
-                            ))}
-                        </select>
                     </div>
 
                     <nav className="flex flex-col space-y-5 text-[13px] font-extrabold tracking-wide">
@@ -116,10 +100,43 @@ export default function DocumentsPage() {
             </aside>
 
             {/* Middle Content */}
-            <section className="flex-1 bg-black overflow-y-auto p-8 border border-[#333] m-[2px] rounded-xl flex flex-col">
-                <div className="mb-8 flex justify-between items-end">
-                    <h1 className="text-3xl font-bold uppercase tracking-widest text-[#EAE8E3]">Generated Documents</h1>
-                    <div className="text-gray-500 font-bold tracking-wider text-xs">TOTAL: {filteredDocs.length}</div>
+            <section className={`${isMobileMenuOpen ? "hidden" : "flex"} md:flex flex-1 bg-black overflow-y-auto p-4 md:p-8 md:m-[2px] border-[#333] border-t md:border md:rounded-xl flex-col`}>
+                <div className="mb-6 md:mb-8 flex flex-col gap-6">
+                    <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-end">
+                        <h1 className="text-xl md:text-3xl font-bold uppercase tracking-widest text-[#EAE8E3]">Generated Documents</h1>
+                        <div className="text-gray-500 font-bold tracking-wider text-xs">TOTAL: {filteredDocs.length}</div>
+                    </div>
+
+                    {/* Filters */}
+                    <div className="flex flex-col md:flex-row gap-4 w-full">
+                        <input
+                            type="text"
+                            placeholder="SEARCH DOCUMENTS..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="flex-1 bg-transparent border-b-2 border-[#333] focus:border-gray-500 text-white placeholder-gray-500 text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none transition-colors"
+                        />
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="md:w-48 bg-transparent border-b-2 border-[#333] focus:border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none transition-colors cursor-pointer"
+                        >
+                            <option value="" className="bg-[#1A1A1A]">ALL CATEGORIES</option>
+                            {uniqueCategories.map(cat => (
+                                <option key={cat} value={cat} className="bg-[#1A1A1A]">{cat}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={selectedTemplate}
+                            onChange={(e) => setSelectedTemplate(e.target.value)}
+                            className="md:w-48 bg-transparent border-b-2 border-[#333] focus:border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none transition-colors cursor-pointer"
+                        >
+                            <option value="" className="bg-[#1A1A1A]">ALL TEMPLATES</option>
+                            {uniqueTemplates.map(tpl => (
+                                <option key={tpl} value={tpl} className="bg-[#1A1A1A]">{tpl}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {isLoading ? (
@@ -127,7 +144,7 @@ export default function DocumentsPage() {
                         LOADING...
                     </div>
                 ) : filteredDocs.length > 0 ? (
-                    <div className="w-full bg-[#1A1A1A] rounded-xl border border-[#333] overflow-hidden">
+                    <div className="w-full bg-[#1A1A1A] rounded-xl border border-[#333] overflow-x-auto">
                         <table className="w-full text-left text-sm text-gray-300">
                             <thead className="bg-[#222] text-[10px] uppercase text-gray-500 font-bold tracking-wider border-b border-[#333]">
                                 <tr>
