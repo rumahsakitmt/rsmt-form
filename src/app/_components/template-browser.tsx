@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { authClient } from "@/server/better-auth/client";
 
 export function TemplateBrowser() {
+    const router = useRouter();
+    const utils = api.useUtils();
     const [searchQuery, setSearchQuery] = useState("");
     const { data: cards = [], isLoading: isCardsLoading } = api.template.getAll.useQuery();
     const { data: session, isPending: isSessionLoading } = authClient.useSession();
+
+    const deleteMutation = api.template.delete.useMutation({
+        onSuccess: () => {
+            utils.template.getAll.invalidate();
+        }
+    });
+
     const isLoading = isCardsLoading || isSessionLoading;
 
     const filteredCards = cards.filter((card) =>
@@ -88,10 +98,10 @@ export function TemplateBrowser() {
                 ) : filteredCards.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2px] h-auto min-h-full">
                         {filteredCards.map((card) => (
-                            <Link
-                                href={`/template/${card.id}`}
+                            <div
+                                onClick={() => router.push(`/template/${card.id}`)}
                                 key={card.id}
-                                className={`aspect-square p-6 flex flex-col relative cursor-pointer hover:opacity-90 transition-opacity ${card.theme === "dark"
+                                className={`aspect-square p-6 flex flex-col relative cursor-pointer hover:opacity-90 transition-opacity group ${card.theme === "dark"
                                     ? "bg-[#454545] text-white"
                                     : "bg-[#EAE8E3] text-black"
                                     }`}
@@ -114,15 +124,41 @@ export function TemplateBrowser() {
                                     </h3>
                                 </div>
 
-                                <div className="flex justify-between items-end text-[11px] font-bold mt-auto tracking-wider">
-                                    {card.theme === 'light' ? (
-                                        <div className="w-3 h-3 rounded-full bg-black" />
-                                    ) : (
-                                        <div className="w-3 h-3 rounded-full bg-white" />
-                                    )}
+                                <div className="flex justify-between items-end text-[11px] font-bold mt-auto tracking-wider relative">
+                                    <div className="flex items-center gap-2">
+                                        {card.theme === 'light' ? (
+                                            <div className="w-3 h-3 rounded-full bg-black" />
+                                        ) : (
+                                            <div className="w-3 h-3 rounded-full bg-white" />
+                                        )}
+                                        {session && (
+                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 ml-2">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        router.push(`/admin/templates/${card.id}/edit`);
+                                                    }}
+                                                    className="hover:underline"
+                                                >
+                                                    EDIT
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (window.confirm("Are you sure you want to delete this template?")) {
+                                                            deleteMutation.mutate({ id: card.id });
+                                                        }
+                                                    }}
+                                                    className="hover:underline text-red-500"
+                                                >
+                                                    {deleteMutation.isPending && deleteMutation.variables?.id === card.id ? "DELETING..." : "DELETE"}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                     <span>{card.id.slice(0, 8)}</span>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 ) : (
