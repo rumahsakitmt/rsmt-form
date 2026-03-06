@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -8,10 +8,12 @@ import { api } from "@/trpc/react";
 
 export function TemplateEditor({ templateId }: { templateId: string }) {
     const { data: template, isLoading: isTemplateLoading } = api.template.getById.useQuery({ id: templateId });
+    const { mutateAsync: createDocument } = api.document.create.useMutation();
 
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [savedDocumentId, setSavedDocumentId] = useState<string | null>(null);
     const sigCanvasRefs = useRef<Record<string, SignatureCanvas | null>>({});
 
     useEffect(() => {
@@ -82,7 +84,7 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent, action: 'save' | 'download') => {
         e.preventDefault();
         if (!template) return;
 
@@ -112,30 +114,22 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
         });
 
         try {
-            const response = await fetch("/api/generate-docx", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    templateId: template.id,
-                    data: submitData
-                }),
+            const result = await createDocument({
+                templateId: template.id,
+                data: submitData
             });
+            setSavedDocumentId(result.id);
 
-            if (!response.ok) {
-                throw new Error("Failed to generate document");
+            if (action === 'download') {
+                // Automatically trigger download
+                const link = document.createElement("a");
+                link.href = `/api/documents/${result.id}/download`;
+                link.download = ""; // Browser will handle correct file name from headers
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `dokumen-${template.title || "template"}.docx`);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode?.removeChild(link);
-            window.URL.revokeObjectURL(url);
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Something went wrong.";
             setError(msg);
@@ -154,20 +148,43 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
 
     return (
         <div className="flex flex-col gap-12 w-full items-center justify-center">
-            <div className="w-full max-w-md shrink-0">
-                <DocxForm
-                    fields={template.fields ?? []}
-                    formData={formData}
-                    onChange={handleChange}
-                    onAddRow={handleAddRow}
-                    onRemoveRow={handleRemoveRow}
-                    sigCanvasRefs={sigCanvasRefs}
-                    onClearSignature={handleClearSignature}
-                    onSubmit={handleSubmit}
-                    loading={loading}
-                    error={error}
-                />
-            </div>
+            {savedDocumentId ? (
+                <div className="w-full max-w-md shrink-0 flex flex-col items-center justify-center bg-gray-900/50 rounded-xl p-8 border border-emerald-500/30 gap-6">
+                    <div className="text-emerald-400 text-2xl font-bold text-center">Document Saved Successfully!</div>
+                    <p className="text-gray-300 text-center">Your document has been saved. You can download it below.</p>
+                    <a
+                        href={`/api/documents/${savedDocumentId}/download`}
+                        className="bg-accent text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-emerald-600 transition-colors w-full text-center"
+                    >
+                        Download Document
+                    </a>
+                    <button
+                        onClick={() => {
+                            setSavedDocumentId(null);
+                            // Clear signature canvases via state reset; canvases clear internally or via key remounting 
+                            // A page reload is simple, but we can just setFormData to initial if needed, or leave it.
+                        }}
+                        className="text-gray-400 hover:text-white mt-4 underline underline-offset-4"
+                    >
+                        Create another
+                    </button>
+                </div>
+            ) : (
+                <div className="w-full max-w-md shrink-0">
+                    <DocxForm
+                        fields={template.fields ?? []}
+                        formData={formData}
+                        onChange={handleChange}
+                        onAddRow={handleAddRow}
+                        onRemoveRow={handleRemoveRow}
+                        sigCanvasRefs={sigCanvasRefs}
+                        onClearSignature={handleClearSignature}
+                        onSubmit={handleSubmit}
+                        loading={loading}
+                        error={error}
+                    />
+                </div>
+            )}
         </div>
     );
 }

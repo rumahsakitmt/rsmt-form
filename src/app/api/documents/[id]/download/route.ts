@@ -4,27 +4,31 @@ import path from "path";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { db } from "@/server/db";
-import { documentTemplate } from "@/server/db/schema";
+import { generatedDocument } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 import ImageModule from "docxtemplater-image-module-free";
 
-export async function POST(req: Request) {
+export async function GET(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     try {
-        const payload = (await req.json()) as { templateId: string, data: Record<string, unknown> };
-        const { templateId, data } = payload;
+        const id = (await params).id;
 
-        if (!templateId || !data) {
-            return NextResponse.json({ error: "Missing templateId or data" }, { status: 400 });
-        }
-
-        const template = await db.query.documentTemplate.findFirst({
-            where: eq(documentTemplate.id, String(templateId)),
+        const docRecord = await db.query.generatedDocument.findFirst({
+            where: eq(generatedDocument.id, id),
+            with: {
+                template: true,
+            }
         });
 
-        if (!template) {
-            return NextResponse.json({ error: "Template not found" }, { status: 404 });
+        if (!docRecord?.template) {
+            return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
+
+        const template = docRecord.template;
+        const data = JSON.parse(docRecord.data) as Record<string, unknown>;
 
         // Load the template from the public folder based on template.filePath that looks like /templates/xyz.docx
         const relativePath = template.filePath.replace(/^\//, "");

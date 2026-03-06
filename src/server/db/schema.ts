@@ -148,6 +148,7 @@ export const documentTemplate = sqliteTable("document_template", (d) => ({
   fileName: d.text({ length: 255 }).notNull(),
   filePath: d.text({ length: 1024 }).notNull(), // Public path to access the file
   fileHash: d.text({ length: 255 }), // Optional: Ensure uniqueness/cache busting
+  createdById: d.text({ length: 255 }).references(() => user.id),
   createdAt: d
     .integer({ mode: "timestamp" })
     .default(sql`(unixepoch())`)
@@ -155,8 +156,13 @@ export const documentTemplate = sqliteTable("document_template", (d) => ({
   updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
 }));
 
-export const documentTemplateRelations = relations(documentTemplate, ({ many }) => ({
+export const documentTemplateRelations = relations(documentTemplate, ({ one, many }) => ({
+  createdBy: one(user, {
+    fields: [documentTemplate.createdById],
+    references: [user.id],
+  }),
   fields: many(templateField),
+  generatedDocuments: many(generatedDocument),
 }));
 
 export const templateField = sqliteTable("template_field", (d) => ({
@@ -188,5 +194,37 @@ export const templateFieldRelations = relations(templateField, ({ one }) => ({
   template: one(documentTemplate, {
     fields: [templateField.templateId],
     references: [documentTemplate.id],
+  }),
+}));
+
+export const generatedDocument = sqliteTable("generated_document", (d) => ({
+  id: d
+    .text({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  templateId: d
+    .text({ length: 255 })
+    .notNull()
+    .references(() => documentTemplate.id, { onDelete: 'cascade' }),
+  data: d.text().notNull(), // JSON string
+  createdById: d.text({ length: 255 }).references(() => user.id),
+  createdAt: d
+    .integer({ mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+}), (t) => [
+  index("generated_document_template_id_idx").on(t.templateId),
+]);
+
+export const generatedDocumentRelations = relations(generatedDocument, ({ one }) => ({
+  template: one(documentTemplate, {
+    fields: [generatedDocument.templateId],
+    references: [documentTemplate.id],
+  }),
+  createdBy: one(user, {
+    fields: [generatedDocument.createdById],
+    references: [user.id],
   }),
 }));

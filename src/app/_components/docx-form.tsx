@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 "use client";
 
+import { useState } from "react";
 import type { MutableRefObject } from "react";
 import SignatureCanvas from "react-signature-canvas";
 
@@ -12,7 +13,7 @@ type Props = {
     onRemoveRow: (parentName: string, index: number) => void;
     sigCanvasRefs: MutableRefObject<Record<string, SignatureCanvas | null>>;
     onClearSignature: (name: string, parentName?: string, index?: number) => void;
-    onSubmit: (e: React.FormEvent) => void;
+    onSubmit: (e: React.FormEvent, action: 'save' | 'download') => void;
     loading: boolean;
     error: string;
 };
@@ -29,6 +30,8 @@ export function DocxForm({
     loading,
     error,
 }: Props) {
+    const [submitAction, setSubmitAction] = useState<'save' | 'download'>('save');
+
     const rootFields = fields.filter(f => !f.parentId).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     const getChildren = (parentId: string) => fields.filter(f => f.parentId === parentId).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
@@ -96,7 +99,7 @@ export function DocxForm({
         <div className="w-full rounded-xl bg-white/10 p-6 shadow-xl backdrop-blur-md border border-white/5">
             <h2 className="mb-6 text-2xl font-bold text-white text-center">Isi Formulir</h2>
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-4 text-sm z-50">
+            <form onSubmit={(e) => onSubmit(e, submitAction)} className="flex flex-col gap-4 text-sm z-50">
                 {rootFields.map((field) => {
                     if (field.fieldType === 'array') {
                         const childrenFields = getChildren(field.id);
@@ -128,14 +131,25 @@ export function DocxForm({
 
                 {error && <p className="text-sm text-red-500 font-bold mt-2">{error}</p>}
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="mt-4 rounded-lg bg-white text-black px-5 py-4 font-bold uppercase tracking-wider transition-colors hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed w-full flex justify-center items-center gap-2 relative z-10"
-                >
-                    {loading ? "MENGHASILKAN DOKUMEN..." : "DOWNLOAD DOKUMEN"}
-                    {!loading && <span>↓</span>}
-                </button>
+                <div className="mt-4 flex gap-4 w-full z-10 relative">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        onClick={() => setSubmitAction('save')}
+                        className="flex-1 rounded-lg bg-[#333] text-white px-5 py-4 font-bold uppercase tracking-wider transition-colors hover:bg-[#444] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                    >
+                        {loading && submitAction === 'save' ? "SAVING..." : "SAVE"}
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        onClick={() => setSubmitAction('download')}
+                        className="flex-1 rounded-lg bg-white text-black px-5 py-4 font-bold uppercase tracking-wider transition-colors hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                    >
+                        {loading && submitAction === 'download' ? "GENERATING..." : "DOWNLOAD"}
+                        {!loading && <span>↓</span>}
+                    </button>
+                </div>
             </form>
         </div>
     );

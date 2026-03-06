@@ -51,7 +51,10 @@ export function TemplateBrowser() {
                             <span>ALL TEMPLATES</span>
                             <div className="w-2.5 h-2.5 rounded-full bg-white" />
                         </div>
-                        <Link href="/admin/templates/new" className="flex justify-between items-center text-gray-400 hover:text-white transition-colors cursor-pointer">
+                        <Link href="/documents" className="flex justify-between items-center text-gray-400 hover:text-white transition-colors cursor-pointer">
+                            <span>GENERATED DOCUMENTS</span>
+                        </Link>
+                        <Link href="/admin/templates/new" className="flex justify-between items-center text-gray-400 hover:text-white transition-colors cursor-pointer border-t border-gray-600 pt-5 mt-4">
                             <span>ADD TEMPLATE +</span>
                         </Link>
                     </nav>

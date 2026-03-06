@@ -65,6 +65,7 @@ export const templateRouter = createTRPCRouter({
                 icon: input.icon ?? "light",
                 fileName: input.fileName,
                 filePath: input.filePath,
+                createdById: ctx.session.user.id,
             });
 
             if (input.fields.length > 0) {
