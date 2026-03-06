@@ -132,3 +132,60 @@ export const verification = sqliteTable(
   }),
   (t) => [index("verification_identifier_idx").on(t.identifier)],
 );
+
+// Document Template System
+export const documentTemplate = sqliteTable("document_template", (d) => ({
+  id: d
+    .text({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: d.text({ length: 256 }).notNull(),
+  category: d.text({ length: 100 }).notNull(),
+  status: d.text({ length: 50 }).notNull(), // 'DRAFT', 'ACTIVE', 'ARCHIVED'
+  theme: d.text({ length: 50 }).notNull().default("light"), // 'light', 'dark'
+  icon: d.text({ length: 50 }), // To store icon identifiers if needed
+  fileName: d.text({ length: 255 }).notNull(),
+  filePath: d.text({ length: 1024 }).notNull(), // Public path to access the file
+  fileHash: d.text({ length: 255 }), // Optional: Ensure uniqueness/cache busting
+  createdAt: d
+    .integer({ mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+}));
+
+export const documentTemplateRelations = relations(documentTemplate, ({ many }) => ({
+  fields: many(templateField),
+}));
+
+export const templateField = sqliteTable("template_field", (d) => ({
+  id: d
+    .text({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  templateId: d
+    .text({ length: 255 })
+    .notNull()
+    .references(() => documentTemplate.id, { onDelete: 'cascade' }),
+  name: d.text({ length: 255 }).notNull(), // The variable in docx, e.g., 'patient_name'
+  label: d.text({ length: 255 }).notNull(), // UI label, e.g., 'Patient Name'
+  fieldType: d.text({ length: 50 }).notNull().default("text"), // 'text', 'date', 'signature', 'number'
+  isRequired: d.integer({ mode: "boolean" }).default(true),
+  order: d.integer().default(0),
+  createdAt: d
+    .integer({ mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+}), (t) => [
+  index("template_field_template_id_idx").on(t.templateId),
+]);
+
+export const templateFieldRelations = relations(templateField, ({ one }) => ({
+  template: one(documentTemplate, {
+    fields: [templateField.templateId],
+    references: [documentTemplate.id],
+  }),
+}));
