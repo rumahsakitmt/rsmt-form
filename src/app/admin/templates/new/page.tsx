@@ -56,7 +56,6 @@ export default function NewTemplatePage() {
                     }
                 });
 
-                console.log("Extracted raw document text length:", text.length);
 
                 // We allow letters, numbers, underscores, and the '%' prefix used by image module
                 const tagRegex = /{{([#\/]?[%a-zA-Z0-9_\s-]+)}}/g;
@@ -124,7 +123,6 @@ export default function NewTemplatePage() {
                     }
                 }
 
-                console.log("Auto-detected variables:", elements);
                 setExtractedFields(elements);
             } catch (error: unknown) {
                 console.error("Error parsing Word document", error);
