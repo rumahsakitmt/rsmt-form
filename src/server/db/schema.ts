@@ -171,7 +171,8 @@ export const templateField = sqliteTable("template_field", (d) => ({
     .references(() => documentTemplate.id, { onDelete: 'cascade' }),
   name: d.text({ length: 255 }).notNull(), // The variable in docx, e.g., 'patient_name'
   label: d.text({ length: 255 }).notNull(), // UI label, e.g., 'Patient Name'
-  fieldType: d.text({ length: 50 }).notNull().default("text"), // 'text', 'date', 'signature', 'number'
+  fieldType: d.text({ length: 50 }).notNull().default("text"), // 'text', 'date', 'signature', 'number', 'array'
+  parentId: d.text({ length: 255 }), // If this field belongs to an array field
   isRequired: d.integer({ mode: "boolean" }).default(true),
   order: d.integer().default(0),
   createdAt: d

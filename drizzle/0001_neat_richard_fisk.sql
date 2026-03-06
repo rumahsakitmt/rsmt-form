@@ -1,0 +1,1 @@
+ALTER TABLE `template_field` ADD `parentId` text(255);

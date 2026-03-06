@@ -15,7 +15,7 @@ export default function NewTemplatePage() {
     const [theme, setTheme] = useState("light");
     const [status, setStatus] = useState("ACTIVE");
     const [file, setFile] = useState<File | null>(null);
-    const [extractedFields, setExtractedFields] = useState<{ name: string; label: string; fieldType: string; isRequired: boolean; order: number }[]>([]);
+    const [extractedFields, setExtractedFields] = useState<{ id: string; name: string; label: string; fieldType: string; isRequired: boolean; order: number; parentId?: string }[]>([]);
     const [loading, setLoading] = useState(false);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,34 +65,73 @@ export default function NewTemplatePage() {
                 console.log("Extracted raw document text length:", text.length);
 
                 // We allow letters, numbers, underscores, and the '%' prefix used by image module
-                const regex = /{{([%a-zA-Z0-9_]+)}}/g;
+                const tagRegex = /{{([#\/]?[%a-zA-Z0-9_\s-]+)}}/g;
                 let match;
-                const variables = new Set<string>();
 
-                while ((match = regex.exec(text)) !== null) {
+                type FieldDefinition = {
+                    name: string;
+                    label: string;
+                    fieldType: string;
+                    isRequired: boolean;
+                    order: number;
+                    id: string;
+                    parentId?: string;
+                };
+
+                const elements: FieldDefinition[] = [];
+                const addedNames = new Set<string>();
+
+                let currentParent: FieldDefinition | null = null;
+                let orderCount = 0;
+
+                while ((match = tagRegex.exec(text)) !== null) {
                     if (match[1]) {
-                        const varName = match[1].trim();
-                        if (varName) variables.add(varName);
+                        const tagName = match[1].trim();
+
+                        if (tagName.startsWith('#')) {
+                            // Array Open
+                            const arrayName = tagName.substring(1);
+                            if (!addedNames.has(arrayName)) {
+                                const newArrayField = {
+                                    id: crypto.randomUUID(),
+                                    name: arrayName,
+                                    label: arrayName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                                    fieldType: 'array',
+                                    isRequired: true,
+                                    order: orderCount++
+                                };
+                                elements.push(newArrayField);
+                                addedNames.add(arrayName);
+                                currentParent = newArrayField;
+                            } else {
+                                currentParent = elements.find(e => e.name === arrayName) || null;
+                            }
+                        } else if (tagName.startsWith('/')) {
+                            // Array Close
+                            currentParent = null;
+                        } else {
+                            // Normal Variable
+                            const cleanVariable = tagName.startsWith('%') ? tagName.substring(1) : tagName;
+
+                            if (!addedNames.has(cleanVariable)) {
+                                addedNames.add(cleanVariable);
+                                elements.push({
+                                    id: crypto.randomUUID(),
+                                    name: cleanVariable,
+                                    label: cleanVariable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                                    fieldType: tagName.startsWith('%') || tagName.toLowerCase().includes('signature') || tagName.toLowerCase().includes('ttd') ? 'signature' :
+                                        cleanVariable.toLowerCase().includes('date') || cleanVariable.toLowerCase().includes('tanggal') ? 'date' : 'text',
+                                    isRequired: true,
+                                    order: orderCount++,
+                                    parentId: currentParent?.id
+                                });
+                            }
+                        }
                     }
                 }
 
-                console.log("Auto-detected variables:", Array.from(variables));
-
-                const initialFields = Array.from(variables).map((variable, index) => {
-                    // Remove the % prefix for the UI label and name
-                    const cleanVariable = variable.startsWith('%') ? variable.substring(1) : variable;
-
-                    return {
-                        name: cleanVariable, // Strip % so data object is clean
-                        label: cleanVariable.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                        fieldType: variable.startsWith('%') || variable.toLowerCase().includes('signature') || variable.toLowerCase().includes('ttd') ? 'signature' :
-                            cleanVariable.toLowerCase().includes('date') || cleanVariable.toLowerCase().includes('tanggal') ? 'date' : 'text',
-                        isRequired: true,
-                        order: index,
-                    }
-                });
-
-                setExtractedFields(initialFields);
+                console.log("Auto-detected variables:", elements);
+                setExtractedFields(elements);
             } catch (error: unknown) {
                 console.error("Error parsing Word document", error);
                 alert("Failed to parse the uploaded document for variables.");
@@ -105,6 +144,21 @@ export default function NewTemplatePage() {
         const newFields = [...extractedFields];
         newFields[index] = { ...newFields[index], [key]: value } as typeof extractedFields[0];
         setExtractedFields(newFields);
+    };
+
+    const handleAddVariable = () => {
+        setExtractedFields([...extractedFields, {
+            id: crypto.randomUUID(),
+            name: `custom_variable_${extractedFields.length + 1}`,
+            label: "Custom Variable",
+            fieldType: "text",
+            isRequired: false,
+            order: extractedFields.length,
+        }]);
+    };
+
+    const handleRemoveField = (index: number) => {
+        setExtractedFields(extractedFields.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -196,10 +250,15 @@ export default function NewTemplatePage() {
                         <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-[#EAE8E3]">Detected Variables</h2>
                         <div className="space-y-4">
                             {extractedFields.map((field, index) => (
-                                <div key={index} className="flex items-center gap-4 bg-black p-4 rounded border border-gray-800">
+                                <div key={index} className={`flex items-center gap-4 bg-black p-4 rounded border border-gray-800 relative ${field.parentId ? 'ml-8 border-l-4 border-l-blue-500' : ''}`}>
+                                    <button type="button" onClick={() => handleRemoveField(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold hover:bg-red-600">×</button>
                                     <div className="w-1/4">
                                         <span className="text-xs font-bold text-gray-500 uppercase">Variable</span>
-                                        <div className="font-mono text-sm mt-1">{`{{${field.name}}}`}</div>
+                                        <div className="mt-1 flex items-center">
+                                            <span className="text-gray-500 font-mono text-sm mr-1">{"{{"}</span>
+                                            <input type="text" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-1 text-white font-mono text-sm focus:border-gray-500 outline-none" />
+                                            <span className="text-gray-500 font-mono text-sm ml-1">{"}}"}</span>
+                                        </div>
                                     </div>
                                     <div className="w-1/3">
                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">UI Label</label>
@@ -207,11 +266,17 @@ export default function NewTemplatePage() {
                                     </div>
                                     <div className="w-1/4">
                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
-                                        <select value={field.fieldType} onChange={(e) => handleFieldChange(index, 'fieldType', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-white focus:border-gray-500 outline-none text-sm">
-                                            <option value="text">Text</option>
-                                            <option value="date">Date</option>
-                                            <option value="signature">Signature</option>
-                                        </select>
+                                        {field.fieldType === 'array' ? (
+                                            <div className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-blue-400 font-bold uppercase text-xs outline-none">
+                                                Array (Repeatable)
+                                            </div>
+                                        ) : (
+                                            <select value={field.fieldType} onChange={(e) => handleFieldChange(index, 'fieldType', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-white focus:border-gray-500 outline-none text-sm">
+                                                <option value="text">Text</option>
+                                                <option value="date">Date</option>
+                                                <option value="signature">Signature</option>
+                                            </select>
+                                        )}
                                     </div>
                                     <div className="flex items-center pt-5">
                                         <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-400 uppercase">
@@ -221,6 +286,11 @@ export default function NewTemplatePage() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-6 border-t border-gray-800 pt-6">
+                            <button type="button" onClick={handleAddVariable} className="w-full border border-dashed border-gray-600 text-gray-400 py-3 rounded hover:bg-gray-800 hover:text-white transition-colors uppercase font-bold text-xs tracking-wider">
+                                + Tambah Variabel Manual (Header/Footer/Custom)
+                            </button>
                         </div>
                     </div>
                 )}

@@ -58,11 +58,21 @@ export async function POST(req: Request) {
             modules: [imageModule],
         });
 
-        const cleanData: Record<string, unknown> = {};
-        for (const [key, value] of Object.entries(data)) {
-            const cleanKey = key.startsWith('%') ? key.substring(1) : key;
-            cleanData[cleanKey] = value;
-        }
+        const cleanDataObj = (obj: any): any => {
+            if (Array.isArray(obj)) {
+                return obj.map(item => cleanDataObj(item));
+            } else if (obj !== null && typeof obj === 'object') {
+                const cleaned: Record<string, any> = {};
+                for (const [key, value] of Object.entries(obj)) {
+                    const cleanKey = key.startsWith('%') ? key.substring(1) : key;
+                    cleaned[cleanKey] = cleanDataObj(value);
+                }
+                return cleaned;
+            }
+            return obj;
+        };
+
+        const cleanData = cleanDataObj(data);
 
         // Render the document with the data from the form
         doc.render(cleanData);

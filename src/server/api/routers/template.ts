@@ -45,8 +45,10 @@ export const templateRouter = createTRPCRouter({
                         name: z.string(),
                         label: z.string(),
                         fieldType: z.string(),
+                        parentId: z.string().optional(),
                         isRequired: z.boolean(),
                         order: z.number(),
+                        id: z.string().optional(),
                     })
                 ),
             })
@@ -67,11 +69,12 @@ export const templateRouter = createTRPCRouter({
 
             if (input.fields.length > 0) {
                 const fieldsToInsert = input.fields.map((field) => ({
-                    id: crypto.randomUUID(),
+                    id: field.id ?? crypto.randomUUID(),
                     templateId,
                     name: field.name,
                     label: field.label,
                     fieldType: field.fieldType,
+                    parentId: field.parentId,
                     isRequired: field.isRequired,
                     order: field.order,
                 }));
@@ -97,8 +100,10 @@ export const templateRouter = createTRPCRouter({
                         name: z.string(),
                         label: z.string(),
                         fieldType: z.string(),
+                        parentId: z.string().optional(),
                         isRequired: z.boolean(),
                         order: z.number(),
+                        id: z.string().optional(),
                     })
                 ),
             })
@@ -122,11 +127,12 @@ export const templateRouter = createTRPCRouter({
 
             if (input.fields.length > 0) {
                 const fieldsToInsert = input.fields.map((field) => ({
-                    id: crypto.randomUUID(),
+                    id: field.id ?? crypto.randomUUID(),
                     templateId: input.id,
                     name: field.name,
                     label: field.label,
                     fieldType: field.fieldType,
+                    parentId: field.parentId,
                     isRequired: field.isRequired,
                     order: field.order,
                 }));
