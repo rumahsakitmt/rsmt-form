@@ -7,15 +7,27 @@ import { authClient } from "@/server/better-auth/client";
 
 export default function DocumentsPage() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedTemplate, setSelectedTemplate] = useState("");
+
     const { data: documents = [], isLoading: isDocsLoading } = api.document.getAll.useQuery();
     const { data: session, isPending: isSessionLoading } = authClient.useSession();
 
     const isLoading = isDocsLoading || isSessionLoading;
 
-    const filteredDocs = documents.filter((doc) =>
-        doc.template?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.template?.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const uniqueCategories = Array.from(new Set(documents.map(d => d.template?.category).filter(Boolean))) as string[];
+    const uniqueTemplates = Array.from(new Set(documents.map(d => d.template?.title).filter(Boolean))) as string[];
+
+    const filteredDocs = documents.filter((doc) => {
+        const matchesSearch = !searchQuery ||
+            (doc.template?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+            (doc.template?.category?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+
+        const matchesCategory = selectedCategory ? doc.template?.category === selectedCategory : true;
+        const matchesTemplate = selectedTemplate ? doc.template?.title === selectedTemplate : true;
+
+        return matchesSearch && matchesCategory && matchesTemplate;
+    });
 
     return (
         <main className="flex h-screen w-full bg-black p-[2px] font-sans overflow-hidden text-sm">
@@ -27,7 +39,7 @@ export default function DocumentsPage() {
                         <span>01</span>
                     </div>
 
-                    <div className="mb-8">
+                    <div className="mb-8 space-y-4">
                         <input
                             type="text"
                             placeholder="SEARCH DOCUMENTS..."
@@ -35,6 +47,26 @@ export default function DocumentsPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-transparent border-b-2 border-gray-500 text-white placeholder-gray-500 text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors"
                         />
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="w-full bg-transparent border-b-2 border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors cursor-pointer"
+                        >
+                            <option value="" className="bg-[#454545]">ALL CATEGORIES</option>
+                            {uniqueCategories.map(cat => (
+                                <option key={cat} value={cat} className="bg-[#454545]">{cat}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={selectedTemplate}
+                            onChange={(e) => setSelectedTemplate(e.target.value)}
+                            className="w-full bg-transparent border-b-2 border-gray-500 text-white text-[11px] font-bold uppercase tracking-wider py-2 focus:outline-none focus:border-white transition-colors cursor-pointer"
+                        >
+                            <option value="" className="bg-[#454545]">ALL TEMPLATES</option>
+                            {uniqueTemplates.map(tpl => (
+                                <option key={tpl} value={tpl} className="bg-[#454545]">{tpl}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <nav className="flex flex-col space-y-5 text-[13px] font-extrabold tracking-wide">
