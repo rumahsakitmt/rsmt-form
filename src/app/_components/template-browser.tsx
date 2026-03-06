@@ -15,7 +15,7 @@ export function TemplateBrowser() {
 
     const deleteMutation = api.template.delete.useMutation({
         onSuccess: () => {
-            utils.template.getAll.invalidate();
+            void utils.template.getAll.invalidate();
         }
     });
 

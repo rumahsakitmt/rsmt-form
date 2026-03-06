@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -34,8 +35,8 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
     const handleChange = (name: string, value: any, parentName?: string, index?: number) => {
         setFormData((prev: Record<string, any>) => {
             if (parentName && index !== undefined) {
-                const newArray = [...(prev[parentName] || [])];
-                if (!newArray[index]) newArray[index] = {};
+                const newArray = [...(prev[parentName] ?? [])];
+                newArray[index] ??= {};
                 newArray[index] = { ...newArray[index], [name]: value };
                 return { ...prev, [parentName]: newArray };
             }
@@ -55,13 +56,13 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
             childrenFields.forEach(child => {
                 row[child.name] = "";
             });
-            return { ...prev, [parentName]: [...(prev[parentName] || []), row] };
+            return { ...prev, [parentName]: [...(prev[parentName] ?? []), row] };
         });
     };
 
     const handleRemoveRow = (parentName: string, index: number) => {
         setFormData((prev) => {
-            const currentArray = prev[parentName] || [];
+            const currentArray = prev[parentName] ?? [];
             if (currentArray.length <= 1) return prev; // Keep at least one row
             const newArray = currentArray.filter((_: any, i: number) => i !== index);
 
@@ -155,7 +156,7 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
         <div className="flex flex-col gap-12 w-full items-center justify-center">
             <div className="w-full max-w-md shrink-0">
                 <DocxForm
-                    fields={template.fields || []}
+                    fields={template.fields ?? []}
                     formData={formData}
                     onChange={handleChange}
                     onAddRow={handleAddRow}

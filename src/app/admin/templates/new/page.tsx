@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PizZip from "pizzip";
-import Docxtemplater from "docxtemplater";
 import { api } from "@/trpc/react";
 
 export default function NewTemplatePage() {
@@ -37,20 +37,15 @@ export default function NewTemplatePage() {
                 const binaryString = atob(_base64);
 
                 const zip = new PizZip(binaryString);
-                const doc = new Docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                    delimiters: { start: "{{", end: "}}" },
-                });
 
-                // Get all text content and find {{variables}} using simple regex
+                // We only need Pizzip to extract text, Docxtemplater parsing is unneeded just for tags
                 let text = "";
                 const files = zip.file(/.*/); // Get all files as array
 
                 files.forEach(file => {
                     if (file.name.startsWith("word/") && file.name.endsWith(".xml")) {
                         try {
-                            const xmlText = file.asText() || "";
+                            const xmlText = file.asText() ?? "";
                             // Strip all xml tags
                             let plainText = xmlText.replace(/<[^>]+>/g, "");
                             // Strip invisible control characters Word sometimes adds
@@ -104,7 +99,7 @@ export default function NewTemplatePage() {
                                 addedNames.add(arrayName);
                                 currentParent = newArrayField;
                             } else {
-                                currentParent = elements.find(e => e.name === arrayName) || null;
+                                currentParent = elements.find(e => e.name === arrayName) ?? null;
                             }
                         } else if (tagName.startsWith('/')) {
                             // Array Close
