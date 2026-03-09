@@ -139,34 +139,32 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
     };
 
     if (isTemplateLoading) {
-        return <div className="text-white text-center font-bold tracking-wider uppercase">Loading Template...</div>;
+        return <div className="flex h-full items-center justify-center p-8 text-[10px] font-mono font-bold tracking-widest text-[#888] uppercase">LOADING TEMPLATE...</div>;
     }
 
     if (!template) {
-        return <div className="text-white text-center font-bold tracking-wider uppercase">Template not found</div>;
+        return <div className="flex h-full items-center justify-center p-8 text-[10px] font-mono font-bold tracking-widest text-[#888] uppercase">TEMPLATE NOT FOUND</div>;
     }
 
     return (
-        <div className="flex flex-col gap-12 w-full items-center justify-center">
+        <div className="flex flex-col gap-12 w-full items-center justify-center font-mono">
             {savedDocumentId ? (
-                <div className="w-full max-w-md shrink-0 flex flex-col items-center justify-center bg-gray-900/50 rounded-xl p-8 border border-emerald-500/30 gap-6">
-                    <div className="text-emerald-400 text-2xl font-bold text-center">Document Saved Successfully!</div>
-                    <p className="text-gray-300 text-center">Your document has been saved. You can download it below.</p>
+                <div className="w-full max-w-md shrink-0 flex flex-col items-center justify-center bg-white rounded-none p-8 border border-academic-black gap-6">
+                    <div className="text-academic-black text-sm font-bold tracking-widest uppercase text-center w-full">DOCUMENT SAVED SUCCESSFULLY!</div>
+                    <p className="text-[#888] text-center text-xs">Your document has been saved. You can download it below.</p>
                     <a
                         href={`/api/documents/${savedDocumentId}/download`}
-                        className="bg-accent text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-emerald-600 transition-colors w-full text-center"
+                        className="bg-academic-green text-academic-black px-8 py-4 rounded-none border border-academic-black font-bold text-[10px] uppercase tracking-widest hover:bg-academic-black hover:text-white transition-colors w-full text-center"
                     >
-                        Download Document
+                        DOWNLOAD DOCUMENT
                     </a>
                     <button
                         onClick={() => {
                             setSavedDocumentId(null);
-                            // Clear signature canvases via state reset; canvases clear internally or via key remounting 
-                            // A page reload is simple, but we can just setFormData to initial if needed, or leave it.
                         }}
-                        className="text-gray-400 hover:text-white mt-4 underline underline-offset-4"
+                        className="text-academic-black hover:underline mt-4 text-[10px] font-bold tracking-widest uppercase"
                     >
-                        Create another
+                        CREATE ANOTHER
                     </button>
                 </div>
             ) : (

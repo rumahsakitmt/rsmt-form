@@ -3,10 +3,15 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist, JetBrains_Mono } from "next/font/google";
 
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
 import { TRPCReactProvider } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-sans'});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -25,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(geist.variable, jetbrainsMono.variable)}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </TRPCReactProvider>
       </body>
     </html>
   );
