@@ -21,11 +21,6 @@ export default async function TemplateFormPage({ params }: Props) {
             </div>
 
             <div className="w-full max-w-6xl mt-20">
-                <div className="mb-12 text-center">
-                    <h1 className="text-3xl font-bold text-white uppercase tracking-wider mb-2">Template #{id}</h1>
-                    <p className="text-gray-400 uppercase tracking-wider text-[11px] font-bold">Fill in the required information below</p>
-                </div>
-
                 <TemplateEditor templateId={id} />
             </div>
         </main>
