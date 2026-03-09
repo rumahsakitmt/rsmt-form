@@ -59,8 +59,15 @@ export default function DocumentsPage() {
     <main className="flex h-dvh w-full flex-col overflow-hidden bg-black font-sans text-sm md:flex-row md:p-[2px]">
       {/* Mobile Header with Drawer */}
       <div className="flex shrink-0 items-center justify-between bg-[#454545] p-4 text-white md:hidden">
-        <div className="flex w-full items-center justify-between text-[11px] font-bold tracking-wider uppercase">
+        <div className="flex w-full items-center justify-between gap-2 text-[11px] font-bold tracking-wider uppercase">
           <span>LIBRARY 01</span>
+          <input
+            type="text"
+            placeholder="SEARCH..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 rounded border border-gray-500 bg-transparent px-2 py-1 text-[10px] text-white uppercase placeholder-gray-500 focus:border-white focus:outline-none"
+          />
           <Drawer direction="left">
             <DrawerTrigger asChild>
               <button className="rounded border border-gray-500 px-3 py-1 transition-colors hover:bg-white hover:text-black">
@@ -235,7 +242,7 @@ export default function DocumentsPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex w-full flex-col gap-4 md:flex-row">
+          <div className="hidden w-full flex-col gap-4 md:flex">
             <input
               type="text"
               placeholder="SEARCH DOCUMENTS..."

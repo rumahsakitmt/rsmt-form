@@ -54,9 +54,15 @@ export function TemplateBrowser() {
   return (
     <main className="flex h-dvh w-full flex-col overflow-hidden bg-black font-sans text-sm md:flex-row md:p-[2px]">
       <div className="flex shrink-0 items-center justify-between bg-[#454545] p-4 text-white md:hidden">
-        <div className="flex w-full items-center justify-between text-[11px] font-bold tracking-wider uppercase">
-          <span>LIBRARY 01</span>
-          <Drawer >
+        <div className="flex w-full items-center justify-between gap-2 text-[11px] font-bold tracking-wider uppercase">
+          <input
+            type="text"
+            placeholder="SEARCH..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 rounded border border-gray-500 bg-transparent px-2 py-1 text-[10px] text-white uppercase placeholder-gray-500 focus:border-white focus:outline-none"
+          />
+          <Drawer>
             <DrawerTrigger asChild>
               <button className="rounded border border-gray-500 px-3 py-1 transition-colors hover:bg-white hover:text-black">
                 MENU
@@ -259,7 +265,7 @@ export function TemplateBrowser() {
           <h1 className="text-xl font-bold tracking-widest text-[#EAE8E3] uppercase md:text-3xl">
             {selectedDocType ? `Document ${selectedDocType}` : "Templates"}
           </h1>
-          <div className="w-full md:w-[300px]">
+          <div className="hidden w-full md:block md:w-[300px]">
             <input
               type="text"
               placeholder="SEARCH TEMPLATES..."
@@ -281,8 +287,8 @@ export function TemplateBrowser() {
                 onClick={() => router.push(`/template/${card.id}`)}
                 key={card.id}
                 className={`group relative flex aspect-square cursor-pointer flex-col p-6 transition-opacity hover:opacity-90 ${card.theme === "dark"
-                  ? "bg-[#454545] text-white"
-                  : "bg-[#EAE8E3] text-black"
+                    ? "bg-[#454545] text-white"
+                    : "bg-[#EAE8E3] text-black"
                   }`}
               >
                 <div
