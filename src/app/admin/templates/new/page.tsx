@@ -198,31 +198,31 @@ export default function NewTemplatePage() {
     };
 
     return (
-        <main className="min-h-screen bg-black text-white p-8 font-sans">
-            <h1 className="text-3xl font-bold mb-8 uppercase tracking-widest text-[#EAE8E3]">Add New Template</h1>
+        <main className="min-h-screen bg-academic-white text-academic-black p-4 md:p-8 font-mono flex flex-col items-center">
+            <h1 className="text-2xl md:text-3xl font-bold mb-8 uppercase tracking-widest text-academic-black border-b-4 border-academic-green inline-block pb-2 text-center w-full max-w-2xl">Add New Template</h1>
 
-            <form onSubmit={handleSubmit} className="max-w-2xl bg-[#1A1A1A] p-8 rounded-xl border border-[#333]">
-                <div className="flex flex-col gap-6">
+            <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-academic-white p-6 md:p-10 border border-academic-black shadow-[8px_8px_0px_#111111]">
+                <div className="flex flex-col gap-8">
                     <div>
-                        <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Title</label>
-                        <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none" placeholder="e.g. TAX EXEMPTION FORM" />
+                        <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Title</label>
+                        <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. TAX EXEMPTION FORM" />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Category</label>
-                            <input required type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none" placeholder="FINANCE" />
+                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Category</label>
+                            <input required type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="FINANCE" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Theme</label>
-                            <select value={theme} onChange={(e) => setTheme(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none">
+                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Theme</label>
+                            <select value={theme} onChange={(e) => setTheme(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors appearance-none cursor-pointer">
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Status</label>
-                            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none">
+                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Status</label>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors appearance-none cursor-pointer">
                                 <option value="ACTIVE">ACTIVE</option>
                                 <option value="DRAFT">DRAFT</option>
                                 <option value="LOCKED">LOCKED</option>
@@ -231,64 +231,75 @@ export default function NewTemplatePage() {
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Document Template (.docx)</label>
-                        <input required type="file" accept=".docx" onChange={handleFileChange} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-white file:text-black file:font-bold file:uppercase cursor-pointer text-sm" />
+                    <div className="border border-academic-black bg-academic-green p-4 shadow-[4px_4px_0px_#111111]">
+                        <label className="block text-[10px] font-bold text-academic-black mb-4 uppercase tracking-widest">Document Template (.docx)</label>
+                        <input required type="file" accept=".docx" onChange={handleFileChange} className="w-full bg-academic-white border border-academic-black p-3 text-academic-black font-mono text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-none file:border file:border-academic-black file:bg-academic-black file:text-academic-white file:font-bold file:uppercase file:text-[10px] file:tracking-widest cursor-pointer hover:file:bg-academic-white hover:file:text-academic-black file:transition-colors" />
                     </div>
                 </div>
 
                 {extractedFields.length > 0 && (
-                    <div className="mt-10 border-t border-gray-700 pt-8">
-                        <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-[#EAE8E3]">Detected Variables</h2>
-                        <div className="space-y-4">
+                    <div className="mt-12 border-t-2 border-academic-black pt-10">
+                        <h2 className="text-xl font-bold mb-6 uppercase tracking-widest text-academic-black flex items-center gap-3">
+                            <span className="bg-academic-green w-4 h-4 inline-block border border-academic-black"></span>
+                            Detected Variables
+                        </h2>
+                        <div className="space-y-6">
                             {extractedFields.map((field, index) => (
-                                <div key={index} className={`flex items-center gap-4 bg-black p-4 rounded border border-gray-800 relative ${field.parentId ? 'ml-8 border-l-4 border-l-blue-500' : ''}`}>
-                                    <button type="button" onClick={() => handleRemoveField(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold hover:bg-red-600">×</button>
-                                    <div className="w-1/4">
-                                        <span className="text-xs font-bold text-gray-500 uppercase">Variable</span>
-                                        <div className="mt-1 flex items-center">
-                                            <span className="text-gray-500 font-mono text-sm mr-1">{"{{"}</span>
-                                            <input type="text" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-1 text-white font-mono text-sm focus:border-gray-500 outline-none" />
-                                            <span className="text-gray-500 font-mono text-sm ml-1">{"}}"}</span>
+                                <div key={index} className={`flex flex-col md:flex-row md:items-start gap-4 bg-academic-white p-6 border border-academic-black relative shadow-[4px_4px_0px_#48C796] ${field.parentId ? 'ml-4 md:ml-8 border-l-4 border-l-academic-green' : ''}`}>
+                                    <button type="button" onClick={() => handleRemoveField(index)} className="absolute -top-3 -right-3 bg-red-500 text-white border border-academic-black w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600 shadow-[2px_2px_0px_#111111] hover:shadow-none hover:translate-y-[2px] hover:translate-x-[2px] transition-all z-10">×</button>
+
+                                    <div className="w-full md:w-1/4">
+                                        <span className="text-[10px] font-bold text-academic-black/60 uppercase tracking-widest mb-1 block">Variable</span>
+                                        <div className="flex items-center">
+                                            <span className="text-academic-black/40 font-mono text-sm mr-1">{"{{"}</span>
+                                            <input type="text" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-mono text-sm focus:border-academic-green outline-none" />
+                                            <span className="text-academic-black/40 font-mono text-sm ml-1">{"}}"}</span>
                                         </div>
                                     </div>
-                                    <div className="w-1/3">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">UI Label</label>
-                                        <input type="text" value={field.label} onChange={(e) => handleFieldChange(index, 'label', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-white focus:border-gray-500 outline-none text-sm" />
+
+                                    <div className="w-full md:w-1/3">
+                                        <label className="block text-[10px] font-bold text-academic-black/60 uppercase tracking-widest mb-1">UI Label</label>
+                                        <input type="text" value={field.label} onChange={(e) => handleFieldChange(index, 'label', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs focus:border-academic-green outline-none" />
                                     </div>
-                                    <div className="w-1/4">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
+
+                                    <div className="w-full md:w-1/4">
+                                        <label className="block text-[10px] font-bold text-academic-black/60 uppercase tracking-widest mb-1">Type</label>
                                         {field.fieldType === 'array' ? (
-                                            <div className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-blue-400 font-bold uppercase text-xs outline-none">
-                                                Array (Repeatable)
+                                            <div className="w-full bg-academic-black text-academic-white border border-academic-black p-2 font-bold uppercase text-[10px] tracking-widest text-center shadow-[2px_2px_0px_#48C796]">
+                                                Array (Repeat)
                                             </div>
                                         ) : (
-                                            <select value={field.fieldType} onChange={(e) => handleFieldChange(index, 'fieldType', e.target.value)} className="w-full bg-[#1A1A1A] border border-gray-700 rounded p-2 text-white focus:border-gray-500 outline-none text-sm">
-                                                <option value="text">Text</option>
-                                                <option value="date">Date</option>
-                                                <option value="signature">Signature</option>
+                                            <select value={field.fieldType} onChange={(e) => handleFieldChange(index, 'fieldType', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs focus:border-academic-green outline-none appearance-none cursor-pointer">
+                                                <option value="text">TEXT</option>
+                                                <option value="date">DATE</option>
+                                                <option value="signature">SIGNATURE</option>
                                             </select>
                                         )}
                                     </div>
-                                    <div className="flex items-center pt-5">
-                                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-400 uppercase">
-                                            <input type="checkbox" checked={field.isRequired} onChange={(e) => handleFieldChange(index, 'isRequired', e.target.checked)} className="accent-white w-4 h-4 cursor-pointer" />
+
+                                    <div className="flex items-center md:pt-6">
+                                        <label className="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-academic-black uppercase tracking-widest group">
+                                            <div className="relative flex items-center justify-center">
+                                                <input type="checkbox" checked={field.isRequired} onChange={(e) => handleFieldChange(index, 'isRequired', e.target.checked)} className="peer appearance-none w-4 h-4 border border-academic-black bg-academic-white checked:bg-academic-green cursor-pointer transition-colors" />
+                                                <svg className="absolute w-3 h-3 text-academic-black pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="square" strokeLinejoin="miter"><polyline points="20 6 9 17 4 12" /></svg>
+                                            </div>
                                             Required
                                         </label>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-6 border-t border-gray-800 pt-6">
-                            <button type="button" onClick={handleAddVariable} className="w-full border border-dashed border-gray-600 text-gray-400 py-3 rounded hover:bg-gray-800 hover:text-white transition-colors uppercase font-bold text-xs tracking-wider">
-                                + Tambah Variabel Manual (Header/Footer/Custom)
+
+                        <div className="mt-8 pt-2">
+                            <button type="button" onClick={handleAddVariable} className="w-full border-2 border-dashed border-academic-black/40 text-academic-black/60 py-4 font-bold text-[10px] tracking-widest uppercase hover:text-academic-black hover:border-academic-black hover:bg-academic-black/5 transition-all">
+                                + Add Manual Variable (Header/Footer/Custom)
                             </button>
                         </div>
                     </div>
                 )}
 
-                <button disabled={loading || !file} type="submit" className="mt-10 w-full bg-white text-black font-bold uppercase tracking-widest py-4 rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    {loading ? "Saving..." : "Save Template"}
+                <button disabled={loading || !file} type="submit" className="mt-12 w-full bg-academic-black border border-academic-black text-academic-white font-bold text-sm uppercase tracking-widest py-4 shadow-[4px_4px_0px_#48C796] hover:shadow-[2px_2px_0px_#48C796] hover:translate-y-[2px] hover:translate-x-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_#48C796]">
+                    {loading ? "SAVING..." : "SAVE TEMPLATE"}
                 </button>
             </form>
         </main>
