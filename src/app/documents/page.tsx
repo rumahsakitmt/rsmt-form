@@ -5,6 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { authClient } from "@/server/better-auth/client";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -49,23 +57,98 @@ export default function DocumentsPage() {
 
   return (
     <main className="flex h-dvh w-full flex-col overflow-hidden bg-black font-sans text-sm md:flex-row md:p-[2px]">
-      {/* Mobile Header */}
+      {/* Mobile Header with Drawer */}
       <div className="flex shrink-0 items-center justify-between bg-[#454545] p-4 text-white md:hidden">
         <div className="flex w-full items-center justify-between text-[11px] font-bold tracking-wider uppercase">
           <span>LIBRARY 01</span>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="rounded border border-gray-500 px-3 py-1 transition-colors hover:bg-white hover:text-black"
-          >
-            {isMobileMenuOpen ? "CLOSE" : "MENU"}
-          </button>
+          <Drawer direction="left">
+            <DrawerTrigger asChild>
+              <button className="rounded border border-gray-500 px-3 py-1 transition-colors hover:bg-white hover:text-black">
+                MENU
+              </button>
+            </DrawerTrigger>
+            <DrawerContent className="inset-y-0 left-0 h-full w-[280px] rounded-none bg-[#454545]">
+              <DrawerHeader className="sr-only">
+                <DrawerTitle>Navigation Menu</DrawerTitle>
+              </DrawerHeader>
+              <div className="flex h-full flex-col justify-between p-6 text-white">
+                <div>
+                  <div className="mb-8 flex justify-between text-[11px] font-bold tracking-wider uppercase">
+                    <span>LIBRARY</span>
+                    <span>01</span>
+                  </div>
+
+                  <nav className="flex flex-col space-y-5 text-[13px] font-extrabold tracking-wide">
+                    <Link
+                      href="/"
+                      className="flex cursor-pointer items-center justify-between text-gray-400 transition-colors hover:text-white"
+                    >
+                      <span>ALL TEMPLATES</span>
+                    </Link>
+                    <div className="flex cursor-pointer items-center justify-between text-white transition-colors hover:text-gray-300">
+                      <span>GENERATED DOCUMENTS</span>
+                      <div className="h-2.5 w-2.5 rounded-full bg-white" />
+                    </div>
+                    <Link
+                      href="/admin/templates/new"
+                      className="mt-4 flex cursor-pointer items-center justify-between border-t border-gray-600 pt-4 text-gray-400 transition-colors hover:text-white"
+                    >
+                      <span>ADD TEMPLATE +</span>
+                    </Link>
+                  </nav>
+                </div>
+
+                <div className="space-y-6 text-[11px] font-bold tracking-wider">
+                  <div className="flex justify-between text-gray-400 uppercase">
+                    <span className="text-white">SYSTEM</span>
+                    <span>v2.4</span>
+                  </div>
+                  {session ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="leading-tight text-gray-400 uppercase">
+                        LOGGED IN AS
+                        <br />
+                        <span className="text-white">
+                          {session.user.name || session.user.email}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          void authClient.signOut({
+                            fetchOptions: {
+                              onSuccess: () => {
+                                window.location.href = "/login";
+                              },
+                            },
+                          });
+                        }}
+                        className="text-left text-[10px] tracking-wider text-gray-400 uppercase transition-colors hover:text-white"
+                      >
+                        SIGN OUT
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <div className="leading-tight text-gray-400 uppercase">
+                        NOT LOGGED IN
+                      </div>
+                      <Link
+                        href="/login"
+                        className="text-[11px] tracking-wider text-white uppercase transition-colors hover:text-gray-300"
+                      >
+                        SIGN IN →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
 
-      {/* Left Sidebar */}
-      <aside
-        className={`${isMobileMenuOpen ? "flex" : "hidden"} relative w-full flex-1 shrink-0 flex-col justify-between overflow-y-auto border-b-2 border-black bg-[#454545] p-6 text-white md:flex md:h-full md:w-[280px] md:flex-none md:border-r-2 md:border-b-0`}
-      >
+      {/* Left Sidebar - Desktop only */}
+      <aside className="relative hidden w-full flex-1 shrink-0 flex-col justify-between overflow-y-auto border-b-2 border-black bg-[#454545] p-6 text-white md:flex md:h-full md:w-[280px] md:flex-none md:border-r-2 md:border-b-0">
         <div>
           <div className="mb-8 hidden justify-between text-[11px] font-bold tracking-wider uppercase md:flex">
             <span>LIBRARY</span>
