@@ -16,7 +16,7 @@ export default function DocumentDetailPage() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen flex-col items-center bg-academic-white p-4 font-mono text-xs">
+      <main className="flex h-full flex-col items-center bg-academic-white p-4 font-mono text-xs">
         <div className="font-bold tracking-wider text-academic-black uppercase">
           Loading...
         </div>
@@ -26,7 +26,7 @@ export default function DocumentDetailPage() {
 
   if (!doc) {
     return (
-      <main className="flex min-h-screen flex-col items-center bg-academic-white p-4 font-mono text-xs">
+      <main className="flex h-full flex-col items-center bg-academic-white p-4 font-mono text-xs">
         <div className="font-bold tracking-wider text-academic-black uppercase">
           Document not found
         </div>
@@ -41,7 +41,7 @@ export default function DocumentDetailPage() {
     typeof doc.data === "string" ? JSON.parse(doc.data) : doc.data;
 
   return (
-    <main className="flex min-h-screen flex-col bg-academic-white p-4 font-mono text-xs text-academic-black">
+    <main className="flex h-full flex-col bg-academic-white p-4 font-mono text-xs text-academic-black">
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-8 mt-4">
           <Link

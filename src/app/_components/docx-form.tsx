@@ -187,7 +187,6 @@ export function DocxForm({
                     <p className="text-[#888] text-[10px] font-mono font-bold tracking-widest uppercase text-center pb-8 pt-4">TANDA TANGANI DI AREA PUTIH DI ATAS</p>
                 </div>
             )}
-            <h2 className="mb-6 text-sm font-mono font-bold tracking-widest uppercase text-academic-black text-center">ISI FORMULIR</h2>
 
             <form onSubmit={(e) => onSubmit(e, submitAction)} className="flex flex-col gap-6 text-[10px] font-mono z-50">
                 {rootFields.map((field) => {
