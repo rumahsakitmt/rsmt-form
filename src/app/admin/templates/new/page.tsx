@@ -10,9 +10,7 @@ export default function NewTemplatePage() {
     const createTemplate = api.template.create.useMutation();
 
     const [title, setTitle] = useState("");
-    const [category, setCategory] = useState("FINANCE");
-    const [theme, setTheme] = useState("light");
-    const [status, setStatus] = useState("ACTIVE");
+    const [room, setRoom] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [extractedFields, setExtractedFields] = useState<{ id: string; name: string; label: string; fieldType: string; isRequired: boolean; order: number; parentId?: string }[]>([]);
     const [loading, setLoading] = useState(false);
@@ -180,9 +178,10 @@ export default function NewTemplatePage() {
 
             await createTemplate.mutateAsync({
                 title,
-                category,
-                theme,
-                status,
+                category: room || "UNCATEGORIZED",
+                room,
+                theme: "light",
+                status: "ACTIVE",
                 fileName,
                 filePath,
                 fields: extractedFields,
@@ -205,29 +204,13 @@ export default function NewTemplatePage() {
                 <div className="flex flex-col gap-8">
                     <div>
                         <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Title</label>
-                        <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. TAX EXEMPTION FORM" />
+                        <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. General Consent" />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                         <div>
-                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Category</label>
-                            <input required type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="FINANCE" />
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Theme</label>
-                            <select value={theme} onChange={(e) => setTheme(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors appearance-none cursor-pointer">
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Status</label>
-                            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors appearance-none cursor-pointer">
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="DRAFT">DRAFT</option>
-                                <option value="LOCKED">LOCKED</option>
-                                <option value="REVIEW">REVIEW</option>
-                            </select>
+                            <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Room</label>
+                            <input required type="text" value={room} onChange={(e) => setRoom(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. UP3" />
                         </div>
                     </div>
 

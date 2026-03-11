@@ -16,7 +16,7 @@ export default function EditTemplatePage() {
     const updateTemplate = api.template.update.useMutation();
 
     const [title, setTitle] = useState("");
-    const [category, setCategory] = useState("FINANCE");
+    const [room, setRoom] = useState("");
     const [theme, setTheme] = useState("light");
     const [status, setStatus] = useState("ACTIVE");
     const [file, setFile] = useState<File | null>(null);
@@ -26,7 +26,7 @@ export default function EditTemplatePage() {
     useEffect(() => {
         if (template) {
             setTitle(template.title);
-            setCategory(template.category);
+            setRoom(template.room || "");
             setTheme(template.theme);
             setStatus(template.status);
             setExtractedFields(template.fields.map(f => ({
@@ -206,7 +206,8 @@ export default function EditTemplatePage() {
             await updateTemplate.mutateAsync({
                 id,
                 title,
-                category,
+                category: room || "UNCATEGORIZED",
+                room,
                 theme,
                 status,
                 fileName,
@@ -244,8 +245,8 @@ export default function EditTemplatePage() {
 
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Category</label>
-                            <input required type="text" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none" placeholder="FINANCE" />
+                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Room</label>
+                            <input required type="text" value={room} onChange={(e) => setRoom(e.target.value)} className="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-white outline-none" placeholder="e.g. UP3 BANTEN UTARA" />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Theme</label>

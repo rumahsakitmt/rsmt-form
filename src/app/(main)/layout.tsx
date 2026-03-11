@@ -1,9 +1,16 @@
 import { Header } from "@/components/header";
 import { BackToTop } from "@/components/back-to-top";
+import { getSession } from "@/server/better-auth/server";
+import { redirect } from "next/navigation";
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getSession();
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <div className="flex  flex-col overflow-hidden">
       <Header />

@@ -38,6 +38,13 @@ export const user = sqliteTable("user", (d) => ({
   email: d.text({ length: 255 }).notNull().unique(),
   emailVerified: d.integer({ mode: "boolean" }).default(false),
   image: d.text({ length: 255 }),
+  // Admin plugin fields
+  role: d.text("role"),
+  banned: d.integer("banned", { mode: "boolean" }),
+  banReason: d.text("banReason"),
+  banExpires: d.integer("banExpires", { mode: "timestamp" }),
+  // Custom fields
+  room: d.text("room"),
   createdAt: d
     .integer({ mode: "timestamp" })
     .default(sql`(unixepoch())`)
@@ -148,6 +155,7 @@ export const documentTemplate = sqliteTable("document_template", (d) => ({
   fileName: d.text({ length: 255 }).notNull(),
   filePath: d.text({ length: 1024 }).notNull(), // Public path to access the file
   fileHash: d.text({ length: 255 }), // Optional: Ensure uniqueness/cache busting
+  room: d.text({ length: 255 }), // Optional room scoping (e.g. "up3")
   createdById: d.text({ length: 255 }).references(() => user.id),
   createdAt: d
     .integer({ mode: "timestamp" })
@@ -208,6 +216,7 @@ export const generatedDocument = sqliteTable("generated_document", (d) => ({
     .notNull()
     .references(() => documentTemplate.id, { onDelete: 'cascade' }),
   data: d.text().notNull(), // JSON string
+  room: d.text({ length: 255 }), // Optional room scoping (e.g. "up3")
   createdById: d.text({ length: 255 }).references(() => user.id),
   createdAt: d
     .integer({ mode: "timestamp" })

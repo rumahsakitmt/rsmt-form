@@ -87,11 +87,19 @@ export function Header() {
               align="end"
               className="border-academic-black bg-academic-white w-56 rounded-none"
             >
-              <DropdownMenuLabel className="text-academic-black font-mono text-[10px] tracking-widest uppercase">
-                {session.user.name || "User"}
-                <span className="text-academic-black/60 mt-0.5 block truncate text-[8px] lowercase">
+              <DropdownMenuLabel className="text-academic-black font-mono text-[10px] tracking-widest uppercase flex flex-col gap-1">
+                <span>{session.user.name || "User"}</span>
+                <span className="text-academic-black/60 block truncate text-[8px] lowercase">
                   {session.user.email}
                 </span>
+                <div className="flex gap-1 mt-1">
+                  {(session.user as any).role && (
+                    <span className="bg-academic-green px-1 text-[8px] border border-academic-black uppercase">{(session.user as any).role}</span>
+                  )}
+                  {(session.user as any).room && (
+                    <span className="bg-academic-green px-1 text-[8px] border border-academic-black uppercase">{(session.user as any).room}</span>
+                  )}
+                </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-academic-black/20" />
               <DropdownMenuItem

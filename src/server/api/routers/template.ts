@@ -11,9 +11,21 @@ import crypto from "crypto";
 
 export const templateRouter = createTRPCRouter({
     getAll: publicProcedure.query(async ({ ctx }) => {
-        return ctx.db.query.documentTemplate.findMany({
+        // If logged in, get user details for filtering
+        const user = ctx.session?.user;
+        const isAdmin = user?.role === "admin";
+        
+        let templates = await ctx.db.query.documentTemplate.findMany({
             orderBy: (templates, { desc }) => [desc(templates.createdAt)],
         });
+
+        // Filter: Admin sees all. Normal user sees global (room is null) or templates matching their room. 
+        // Guest user sees global only.
+        if (!isAdmin) {
+             templates = templates.filter(t => !t.room || t.room === user?.room);
+        }
+
+        return templates;
     }),
 
     getById: publicProcedure
@@ -27,7 +39,17 @@ export const templateRouter = createTRPCRouter({
                     },
                 },
             });
-            return template ?? null;
+
+            if (!template) return null;
+
+            // Authorization check
+            const user = ctx.session?.user;
+            const isAdmin = user?.role === "admin";
+            if (!isAdmin && template.room && template.room !== user?.room) {
+                 return null; // or throw TRPCError UNAUTHORIZED
+            }
+
+            return template;
         }),
 
     create: protectedProcedure
@@ -40,6 +62,7 @@ export const templateRouter = createTRPCRouter({
                 icon: z.string().optional(),
                 fileName: z.string(),
                 filePath: z.string(),
+                room: z.string().optional(),
                 fields: z.array(
                     z.object({
                         name: z.string(),
@@ -65,6 +88,7 @@ export const templateRouter = createTRPCRouter({
                 icon: input.icon ?? "light",
                 fileName: input.fileName,
                 filePath: input.filePath,
+                room: input.room ?? null,
                 createdById: ctx.session.user.id,
             });
 
@@ -96,6 +120,7 @@ export const templateRouter = createTRPCRouter({
                 icon: z.string().optional(),
                 fileName: z.string(),
                 filePath: z.string(),
+                room: z.string().optional(),
                 fields: z.array(
                     z.object({
                         name: z.string(),
@@ -119,6 +144,7 @@ export const templateRouter = createTRPCRouter({
                     icon: input.icon ?? "light",
                     fileName: input.fileName,
                     filePath: input.filePath,
+                    room: input.room ?? null,
                     updatedAt: new Date(),
                 })
                 .where(eq(documentTemplate.id, input.id));

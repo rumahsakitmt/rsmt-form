@@ -17,11 +17,15 @@ export const documentRouter = createTRPCRouter({
         )
         .mutation(async ({ ctx, input }) => {
             const documentId = crypto.randomUUID();
+            
+            // Get user's room to attach to the document
+            const userRoom = ctx.session.user.room;
 
             await ctx.db.insert(generatedDocument).values({
                 id: documentId,
                 templateId: input.templateId,
                 data: JSON.stringify(input.data),
+                room: userRoom ?? null,
                 createdById: ctx.session.user.id,
             });
 
@@ -29,12 +33,21 @@ export const documentRouter = createTRPCRouter({
         }),
 
     getAll: protectedProcedure.query(async ({ ctx }) => {
-        return ctx.db.query.generatedDocument.findMany({
+        const user = ctx.session.user;
+        const isAdmin = user.role === "admin";
+
+        let docs = await ctx.db.query.generatedDocument.findMany({
             with: {
                 template: true,
                 createdBy: true,
             },
             orderBy: (docs, { desc }) => [desc(docs.createdAt)],
         });
+
+        if (!isAdmin) {
+             docs = docs.filter(d => !d.room || d.room === user.room);
+        }
+
+        return docs;
     }),
 });
