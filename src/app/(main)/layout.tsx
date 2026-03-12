@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Academic Document Generator",
-  description: "Generate academic documents, forms, and templates easily.",
+  title: "RSMT.DOCX",
+  description: "Buat dokumen, formulir, dan template dengan mudah.",
 };
 
 export default async function MainLayout({

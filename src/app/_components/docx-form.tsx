@@ -98,7 +98,7 @@ export function DocxForm({
                 onChange(
                   field.name,
                   sigCanvasRefs.current[refKey]
-                    ?.getTrimmedCanvas()
+                    ?.getCanvas()
                     .toDataURL("image/png") ?? "",
                   parentName,
                   index,
@@ -237,7 +237,7 @@ export function DocxForm({
                     !expandedCanvasRef.current.isEmpty()
                   ) {
                     const dataUrl = expandedCanvasRef.current
-                      .getTrimmedCanvas()
+                      .getCanvas()
                       .toDataURL("image/png");
                     onChange(
                       expandedMeta.fieldName,

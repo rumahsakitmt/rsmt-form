@@ -103,13 +103,13 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
                         const canvas = sigCanvasRefs.current[refKey];
                         return {
                             ...row,
-                            [field.name]: canvas?.isEmpty() ? "" : canvas?.getTrimmedCanvas().toDataURL("image/png") ?? ""
+                            [field.name]: canvas?.isEmpty() ? "" : canvas?.getCanvas().toDataURL("image/png") ?? ""
                         };
                     });
                 }
             } else {
                 const canvas = sigCanvasRefs.current[field.name];
-                submitData[field.name] = canvas?.isEmpty() ? "" : canvas?.getTrimmedCanvas().toDataURL("image/png") ?? "";
+                submitData[field.name] = canvas?.isEmpty() ? "" : canvas?.getCanvas().toDataURL("image/png") ?? "";
             }
         });
 
