@@ -217,6 +217,7 @@ export const generatedDocument = sqliteTable("generated_document", (d) => ({
     .references(() => documentTemplate.id, { onDelete: 'cascade' }),
   data: d.text().notNull(), // JSON string
   room: d.text({ length: 255 }), // Optional room scoping (e.g. "up3")
+  driveFolderUrl: d.text({ length: 1024 }), // URL to the generated Google Drive folder
   createdById: d.text({ length: 255 }).references(() => user.id),
   createdAt: d
     .integer({ mode: "timestamp" })

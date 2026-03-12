@@ -14,6 +14,8 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string(),
     DATABASE_URL: z.string(),
     DATABASE_AUTH_TOKEN: z.string(),
+    GOOGLE_CLIENT_EMAIL: z.string().optional(),
+    GOOGLE_PRIVATE_KEY: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -37,6 +39,8 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,
+    GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL,
+    GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**

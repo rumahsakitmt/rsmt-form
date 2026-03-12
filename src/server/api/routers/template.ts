@@ -53,7 +53,7 @@ export const templateRouter = createTRPCRouter({
             return template;
         }),
 
-    create: protectedProcedure
+    create: publicProcedure
         .input(
             z.object({
                 title: z.string().min(1),
@@ -90,7 +90,7 @@ export const templateRouter = createTRPCRouter({
                 fileName: input.fileName,
                 filePath: input.filePath,
                 room: input.room ?? null,
-                createdById: ctx.session.user.id,
+                createdById: ctx.session?.user?.id ?? null,
             });
 
             if (input.fields.length > 0) {

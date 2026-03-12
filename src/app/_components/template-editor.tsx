@@ -14,6 +14,7 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [savedDocumentId, setSavedDocumentId] = useState<string | null>(null);
+    const [driveFolderUrl, setDriveFolderUrl] = useState<string | null>(null);
     const sigCanvasRefs = useRef<Record<string, SignatureCanvas | null>>({});
 
     useEffect(() => {
@@ -119,6 +120,9 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
                 data: submitData
             });
             setSavedDocumentId(result.id);
+            if (result.driveFolderUrl) {
+                setDriveFolderUrl(result.driveFolderUrl);
+            }
 
             if (action === 'download') {
                 // Automatically trigger download
@@ -158,9 +162,20 @@ export function TemplateEditor({ templateId }: { templateId: string }) {
                     >
                         DOWNLOAD DOCUMENT
                     </a>
+                    {driveFolderUrl && (
+                        <a
+                            href={driveFolderUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-academic-yellow text-academic-black px-8 py-4 rounded-none border border-academic-black font-bold text-[10px] uppercase tracking-widest hover:bg-academic-black hover:text-white transition-colors w-full text-center mt-2"
+                        >
+                            UPLOAD FILES TO DRIVE
+                        </a>
+                    )}
                     <button
                         onClick={() => {
                             setSavedDocumentId(null);
+                            setDriveFolderUrl(null);
                         }}
                         className="text-academic-black hover:underline mt-4 text-[10px] font-bold tracking-widest uppercase"
                     >
