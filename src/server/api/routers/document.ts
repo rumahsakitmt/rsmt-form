@@ -22,12 +22,12 @@ export const documentRouter = createTRPCRouter({
         )
         .mutation(async ({ ctx, input }) => {
             const documentId = crypto.randomUUID();
-            
+
             // Get user's room to attach to the document
             const userRoom = ctx.session.user.room;
 
             let driveFolderUrl: string | null = null;
-            
+
             // Fetch template to check if it's UP3
             const template = await ctx.db.query.documentTemplate.findFirst({
                 where: eq(documentTemplate.id, input.templateId),
@@ -36,10 +36,10 @@ export const documentRouter = createTRPCRouter({
             if (template && (template.room?.toLowerCase() === "up3" || template.category?.toLowerCase() === "up3")) {
                 // Determine folder name from input data (e.g. "nama" or "name", fallback to document title)
                 const folderName = String(
-                    input.data.nama || 
-                    input.data.name || 
-                    input.data.NAMA || 
-                    input.data.NAME || 
+                    input.data.nama ??
+                    input.data.name ??
+                    input.data.NAMA ??
+                    input.data.NAME ??
                     `${template.title} - ${new Date().toISOString().split('T')[0]}`
                 );
 
@@ -102,7 +102,7 @@ export const documentRouter = createTRPCRouter({
         });
 
         if (!isAdmin) {
-             docs = docs.filter(d => !d.room || d.room === user.room);
+            docs = docs.filter(d => !d.room || d.room === user.room);
         }
 
         return docs;
