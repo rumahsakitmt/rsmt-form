@@ -14,8 +14,8 @@ export default function DocumentDetailPage() {
 
   if (isLoading) {
     return (
-      <main className="flex h-full flex-col items-center bg-academic-white p-4 font-mono text-xs">
-        <div className="font-bold tracking-wider text-academic-black uppercase">
+      <main className="bg-academic-white flex h-full flex-col items-center p-4 font-mono text-xs">
+        <div className="text-academic-black font-bold tracking-wider uppercase">
           Loading...
         </div>
       </main>
@@ -24,27 +24,32 @@ export default function DocumentDetailPage() {
 
   if (!doc) {
     return (
-      <main className="flex h-full flex-col items-center bg-academic-white p-4 font-mono text-xs">
-        <div className="font-bold tracking-wider text-academic-black uppercase">
+      <main className="bg-academic-white flex h-full flex-col items-center p-4 font-mono text-xs">
+        <div className="text-academic-black font-bold tracking-wider uppercase">
           Document not found
         </div>
-        <Link href="/documents" className="mt-4 text-academic-black/60 hover:text-academic-black">
+        <Link
+          href="/documents"
+          className="text-academic-black/60 hover:text-academic-black mt-4"
+        >
           ← Back to Documents
         </Link>
       </main>
     );
   }
 
-  const docData =
-    typeof doc.data === "string" ? JSON.parse(doc.data) : doc.data;
+  const docData: Record<string, unknown> =
+    typeof doc.data === "string"
+      ? (JSON.parse(doc.data) as Record<string, unknown>)
+      : doc.data;
 
   return (
-    <main className="flex h-full flex-col bg-academic-white p-4 font-mono text-xs text-academic-black">
+    <main className="bg-academic-white text-academic-black flex h-full flex-col p-4 font-mono text-xs">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="mb-8 mt-4">
+        <div className="mt-4 mb-8">
           <Link
             href="/documents"
-            className="inline-flex items-center gap-2 border-b-2 border-academic-black pb-1 text-[10px] font-bold tracking-widest text-academic-black uppercase hover:text-academic-black/60 transition-colors"
+            className="border-academic-black text-academic-black hover:text-academic-black/60 inline-flex items-center gap-2 border-b-2 pb-1 text-[10px] font-bold tracking-widest uppercase transition-colors"
           >
             <span className="mb-[2px] leading-none">←</span>
             <span>BACK TO DOCUMENTS</span>
@@ -52,24 +57,24 @@ export default function DocumentDetailPage() {
         </div>
 
         <div className="mb-12">
-          <h1 className="mb-2 text-3xl md:text-5xl font-bold tracking-widest text-academic-black uppercase border-b-4 border-academic-green inline-block pb-2">
+          <h1 className="text-academic-black border-academic-green mb-2 inline-block border-b-4 pb-2 text-3xl font-bold tracking-widest uppercase md:text-5xl">
             {doc.template?.title || "Document Details"}
           </h1>
-          <p className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mt-4">
+          <p className="text-academic-black/60 mt-4 text-[10px] font-bold tracking-widest uppercase">
             {doc.template?.category || "N/A"} • Created{" "}
             {new Date(doc.createdAt).toLocaleString()}
           </p>
         </div>
 
-        <div className="border border-academic-black bg-academic-white p-6 md:p-10 shadow-[8px_8px_0px_#111111]">
-          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between border-b-2 border-academic-black pb-4 gap-4">
-            <h2 className="text-xl font-bold tracking-widest text-academic-black uppercase flex items-center gap-3">
-              <span className="bg-academic-green w-4 h-4 inline-block border border-academic-black"></span>
+        <div className="border-academic-black bg-academic-white border p-6 shadow-[8px_8px_0px_#111111] md:p-10">
+          <div className="border-academic-black mb-8 flex flex-col justify-between gap-4 border-b-2 pb-4 md:flex-row md:items-center">
+            <h2 className="text-academic-black flex items-center gap-3 text-xl font-bold tracking-widest uppercase">
+              <span className="bg-academic-green border-academic-black inline-block h-4 w-4 border"></span>
               Form Data
             </h2>
             <a
               href={`/api/documents/${doc.id}/download`}
-              className="inline-flex items-center gap-2 border border-academic-black bg-academic-green px-6 py-3 text-[10px] font-bold tracking-widest text-academic-black uppercase transition-colors hover:bg-academic-black hover:text-academic-white shadow-[4px_4px_0px_#111111] hover:shadow-[2px_2px_0px_#111111] hover:translate-y-[2px] hover:translate-x-[2px]"
+              className="border-academic-black bg-academic-green text-academic-black hover:bg-academic-black hover:text-academic-white inline-flex items-center gap-2 border px-6 py-3 text-[10px] font-bold tracking-widest uppercase shadow-[4px_4px_0px_#111111] transition-colors hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#111111]"
             >
               DOWNLOAD <span>↓</span>
             </a>
@@ -78,52 +83,57 @@ export default function DocumentDetailPage() {
           <div className="space-y-8">
             {Object.entries(docData).map(([key, value]) => (
               <div key={key} className="flex flex-col gap-2">
-                <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase bg-academic-black/5 inline-block px-2 py-1 border border-academic-black/20 self-start">
+                <div className="text-academic-black/60 bg-academic-black/5 border-academic-black/20 inline-block self-start border px-2 py-1 text-[10px] font-bold tracking-widest uppercase">
                   {key.replace(/_/g, " ")}
                 </div>
                 {typeof value === "string" && value.startsWith("data:image") ? (
-                  <div className="border border-academic-black bg-academic-white p-4 shadow-[4px_4px_0px_#48C796]">
+                  <div className="border-academic-black bg-academic-white border p-4 shadow-[4px_4px_0px_#48C796]">
                     <img
                       src={value}
                       alt={key}
-                      className="max-h-32 border border-academic-black"
+                      className="border-academic-black max-h-32 border"
                     />
                   </div>
                 ) : Array.isArray(value) ? (
                   <div className="space-y-4 pt-2">
                     {value.map((item, idx) => (
                       <div
-                        key={idx}
-                        className="border border-academic-black bg-academic-white p-6 relative"
+                        key={`row-${idx}`}
+                        className="border-academic-black bg-academic-white relative border p-6"
                       >
-                        <div className="absolute -top-3 -left-3 bg-academic-green border border-academic-black px-2 py-1 text-[10px] font-bold text-academic-black uppercase shadow-[2px_2px_0px_#111111]">
+                        <div className="bg-academic-green border-academic-black text-academic-black absolute -top-3 -left-3 border px-2 py-1 text-[10px] font-bold uppercase shadow-[2px_2px_0px_#111111]">
                           Row {idx + 1}
                         </div>
-                        {Object.entries(item).map(([k, v]) => (
-                          <div key={k} className="flex flex-col gap-1 py-3 border-b border-academic-black/20 last:border-0 last:pb-0">
-                            <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase">
-                              {k.replace(/_/g, " ")}
-                            </div>
-                            {typeof v === "string" &&
-                              v.startsWith("data:image") ? (
-                              <img
-                                src={v}
-                                alt={k}
-                                className="max-h-24 border border-academic-black mt-2"
-                              />
-                            ) : (
-                              <div className="font-bold text-academic-black text-sm">
-                                {String(v) || "-"}
+                        {Object.entries(item as Record<string, unknown>).map(
+                          ([k, v]) => (
+                            <div
+                              key={k}
+                              className="border-academic-black/20 flex flex-col gap-1 border-b py-3 last:border-0 last:pb-0"
+                            >
+                              <div className="text-academic-black/60 text-[10px] font-bold tracking-widest uppercase">
+                                {k.replace(/_/g, " ")}
                               </div>
-                            )}
-                          </div>
-                        ))}
+                              {typeof v === "string" &&
+                              v.startsWith("data:image") ? (
+                                <img
+                                  src={v}
+                                  alt={k}
+                                  className="border-academic-black mt-2 max-h-24 border"
+                                />
+                              ) : (
+                                <div className="text-academic-black text-sm font-bold">
+                                  {String(v) || "-"}
+                                </div>
+                              )}
+                            </div>
+                          ),
+                        )}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="border border-academic-black bg-academic-white p-3 shadow-[4px_4px_0px_#48C796]">
-                    <div className="font-bold text-academic-black text-sm">
+                  <div className="border-academic-black bg-academic-white border p-3 shadow-[4px_4px_0px_#48C796]">
+                    <div className="text-academic-black text-sm font-bold">
                       {String(value) || "-"}
                     </div>
                   </div>
@@ -133,47 +143,52 @@ export default function DocumentDetailPage() {
           </div>
         </div>
 
-        <div className="mt-12 mb-12 border border-academic-black bg-academic-green p-6 md:p-8 shadow-[8px_8px_0px_#111111]">
-          <h2 className="mb-6 text-xl font-bold tracking-widest text-academic-black uppercase flex items-center gap-3 border-b-2 border-academic-black pb-4">
-            <span className="bg-academic-white w-4 h-4 inline-block border border-academic-black"></span>
+        <div className="border-academic-black bg-academic-green mt-12 mb-12 border p-6 shadow-[8px_8px_0px_#111111] md:p-8">
+          <h2 className="text-academic-black border-academic-black mb-6 flex items-center gap-3 border-b-2 pb-4 text-xl font-bold tracking-widest uppercase">
+            <span className="bg-academic-white border-academic-black inline-block h-4 w-4 border"></span>
             Document Info
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
-            <div className="border border-academic-black bg-academic-white p-4">
-              <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mb-2 border-b border-academic-black pb-1">
+          <div className="grid grid-cols-1 gap-6 text-xs md:grid-cols-2 lg:grid-cols-3">
+            <div className="border-academic-black bg-academic-white border p-4">
+              <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
                 Document ID
               </div>
-              <div className="font-mono text-academic-black truncate" title={doc.id}>{doc.id}</div>
+              <div
+                className="text-academic-black truncate font-mono"
+                title={doc.id}
+              >
+                {doc.id}
+              </div>
             </div>
-            <div className="border border-academic-black bg-academic-white p-4">
-              <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mb-2 border-b border-academic-black pb-1">
+            <div className="border-academic-black bg-academic-white border p-4">
+              <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
                 Template
               </div>
-              <div className="font-bold text-academic-black truncate">
+              <div className="text-academic-black truncate font-bold">
                 {doc.template?.title || "N/A"}
               </div>
             </div>
-            <div className="border border-academic-black bg-academic-white p-4">
-              <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mb-2 border-b border-academic-black pb-1">
+            <div className="border-academic-black bg-academic-white border p-4">
+              <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
                 Category
               </div>
-              <div className="font-bold text-academic-black uppercase truncate">
+              <div className="text-academic-black truncate font-bold uppercase">
                 {doc.template?.category || "N/A"}
               </div>
             </div>
-            <div className="border border-academic-black bg-academic-white p-4">
-              <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mb-2 border-b border-academic-black pb-1">
+            <div className="border-academic-black bg-academic-white border p-4">
+              <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
                 Created By
               </div>
-              <div className="font-bold text-academic-black truncate">
+              <div className="text-academic-black truncate font-bold">
                 {doc.createdBy?.name ?? doc.createdBy?.email ?? "Unknown"}
               </div>
             </div>
-            <div className="border border-academic-black bg-academic-white p-4 lg:col-span-2">
-              <div className="text-[10px] font-bold tracking-widest text-academic-black/60 uppercase mb-2 border-b border-academic-black pb-1">
+            <div className="border-academic-black bg-academic-white border p-4 lg:col-span-2">
+              <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
                 Created At
               </div>
-              <div className="font-mono text-academic-black truncate">
+              <div className="text-academic-black truncate font-mono">
                 {new Date(doc.createdAt).toLocaleString()}
               </div>
             </div>

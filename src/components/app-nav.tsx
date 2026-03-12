@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { authClient } from "@/server/better-auth/client";
 
+const EMPTY_DOC_TYPES: string[] = [];
+
 interface AppNavProps {
   docTypes?: string[];
   selectedDocType?: string;
@@ -11,7 +13,7 @@ interface AppNavProps {
 }
 
 export function AppNav({
-  docTypes = [],
+  docTypes = EMPTY_DOC_TYPES,
   selectedDocType = "",
   onSelectDocType,
   activeItem = "templates",
@@ -30,7 +32,12 @@ export function AppNav({
         {docTypes.length > 0 ? (
           <>
             <div
+              role="button"
+              tabIndex={0}
               onClick={() => handleDocTypeClick("")}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") && handleDocTypeClick("")
+              }
               className={`flex cursor-pointer items-center justify-between transition-colors hover:text-gray-300 ${
                 !selectedDocType ? "text-white" : "text-gray-400"
               }`}
@@ -43,8 +50,14 @@ export function AppNav({
 
             {docTypes.map((docType) => (
               <div
+                role="button"
+                tabIndex={0}
                 key={docType}
                 onClick={() => handleDocTypeClick(docType)}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") &&
+                  handleDocTypeClick(docType)
+                }
                 className={`flex cursor-pointer items-center justify-between transition-colors hover:text-gray-300 ${
                   selectedDocType === docType ? "text-white" : "text-gray-400"
                 }`}

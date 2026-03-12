@@ -19,10 +19,10 @@ export function BackToTop() {
       }
     };
 
-    window.addEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
     const container = document.getElementById("main-scroll-container");
     if (container) {
-      container.addEventListener("scroll", toggleVisibility);
+      container.addEventListener("scroll", toggleVisibility, { passive: true });
     }
 
     return () => {
@@ -38,7 +38,7 @@ export function BackToTop() {
       top: 0,
       behavior: "smooth",
     });
-    
+
     const container = document.getElementById("main-scroll-container");
     if (container) {
       container.scrollTo({
@@ -53,10 +53,10 @@ export function BackToTop() {
   }
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed right-8 bottom-8 z-50">
       <button
         onClick={scrollToTop}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-academic-black text-white shadow-lg transition-transform hover:scale-110 active:scale-95 sm:bottom-12 sm:right-12"
+        className="bg-academic-black flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110 active:scale-95 sm:right-12 sm:bottom-12"
         aria-label="Back to top"
       >
         <ArrowUp className="h-6 w-6" />

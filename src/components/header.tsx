@@ -44,7 +44,7 @@ export function Header() {
         onValueChange={(val) => void setSelectedTemplateId(val)}
         disabled={isLoading}
       >
-        <SelectTrigger className="border-academic-black w-full rounded-none bg-academic-white font-mono text-[10px] font-bold tracking-widest uppercase md:w-[400px]">
+        <SelectTrigger className="border-academic-black bg-academic-white w-full rounded-none font-mono text-[10px] font-bold tracking-widest uppercase md:w-[400px]">
           <SelectValue
             placeholder={isLoading ? "LOADING..." : "SELECT A TEMPLATE"}
           />
@@ -77,7 +77,7 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none">
               <Avatar className="border-academic-black h-8 w-8 cursor-pointer border transition-opacity hover:opacity-80">
-                <AvatarImage src={session.user.image || ""} />
+                <AvatarImage src={session.user.image ?? ""} />
                 <AvatarFallback className="bg-academic-white text-academic-black font-sans text-xs">
                   {session.user.name?.charAt(0).toUpperCase() || "?"}
                 </AvatarFallback>
@@ -87,17 +87,21 @@ export function Header() {
               align="end"
               className="border-academic-black bg-academic-white w-56 rounded-none"
             >
-              <DropdownMenuLabel className="text-academic-black font-mono text-[10px] tracking-widest uppercase flex flex-col gap-1">
-                <span>{session.user.name || "User"}</span>
+              <DropdownMenuLabel className="text-academic-black flex flex-col gap-1 font-mono text-[10px] tracking-widest uppercase">
+                <span>{session.user.name ?? "User"}</span>
                 <span className="text-academic-black/60 block truncate text-[8px] lowercase">
                   {session.user.email}
                 </span>
-                <div className="flex gap-1 mt-1">
+                <div className="mt-1 flex gap-1">
                   {session.user.role && (
-                    <span className="bg-academic-green px-1 text-[8px] border border-academic-black uppercase">{(session.user as any).role}</span>
+                    <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
+                      {(session.user as { role?: string }).role}
+                    </span>
                   )}
-                  {(session.user as any).room && (
-                    <span className="bg-academic-green px-1 text-[8px] border border-academic-black uppercase">{(session.user as any).room}</span>
+                  {(session.user as { room?: string }).room && (
+                    <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
+                      {(session.user as { room?: string }).room}
+                    </span>
                   )}
                 </div>
               </DropdownMenuLabel>
