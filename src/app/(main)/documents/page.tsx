@@ -5,13 +5,20 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { api } from "@/trpc/react";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { AppNav } from "@/components/app-nav";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -20,7 +27,6 @@ export default function DocumentsPage() {
   });
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { data: documents = [], isLoading: isDocsLoading } =
     api.document.getAll.useQuery();
@@ -55,166 +61,122 @@ export default function DocumentsPage() {
   });
 
   return (
-    <main className="flex h-dvh w-full flex-col overflow-hidden bg-academic-white font-mono text-xs md:flex-row">
-      <div className="flex shrink-0 items-center justify-between bg-academic-green border-b border-academic-black p-4 text-academic-black md:hidden">
-        <div className="flex w-full items-center justify-between gap-2 text-[11px] font-bold tracking-wider uppercase">
-          <span>LIBRARY 01</span>
-          <input
-            type="text"
-            placeholder="SEARCH..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 rounded-none border border-academic-black bg-transparent px-2 py-1 text-[10px] text-academic-black uppercase placeholder-academic-black/50 focus:border-academic-black focus:outline-none"
-          />
-          <Drawer direction="left">
-            <DrawerTrigger asChild>
-              <button className="rounded-none border border-academic-black px-3 py-1 transition-colors bg-academic-white hover:bg-academic-black hover:text-academic-white">
-                MENU
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="inset-y-0 left-0 h-full w-[280px] rounded-none bg-academic-white border-r border-academic-black">
-              <DrawerHeader className="sr-only">
-                <DrawerTitle>Navigation Menu</DrawerTitle>
-              </DrawerHeader>
-              <div className="flex h-full flex-col justify-between p-6 text-academic-black">
-                <AppNav activeItem="documents" />
-              </div>
-            </DrawerContent>
-          </Drawer>
-        </div>
+    <section
+      className="flex-1 flex-col overflow-y-auto max-w-6xl mx-auto bg-academic-white p-2 md:flex md:p-8 text-academic-black border border-black space-y-4 overflow-auto min-h-dvh"
+    >
+      <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+        <input
+          type="text"
+          placeholder="SEARCH DOCUMENTS..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 w-full border-b-2 border-academic-black bg-academic-white py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase placeholder-academic-black/50 transition-colors focus:border-academic-black focus:outline-none"
+        />
+        <Select value={selectedCategory || "all"} onValueChange={(val) => setSelectedCategory(val === "all" ? "" : val)}>
+          <SelectTrigger className="cursor-pointer w-full border-0 border-b-2 border-academic-black bg-academic-white py-2 px-0 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors focus:ring-0 focus:border-academic-black focus:outline-none md:w-48 rounded-none h-auto min-h-[34px] shadow-none">
+            <SelectValue placeholder="ALL CATEGORIES" />
+          </SelectTrigger>
+          <SelectContent className="bg-academic-white border-academic-black rounded-none">
+            <SelectItem value="all" className="focus:bg-academic-green focus:text-academic-black text-[10px] font-bold uppercase tracking-wider cursor-pointer">ALL CATEGORIES</SelectItem>
+            {uniqueCategories.map((cat) => (
+              <SelectItem key={cat} value={cat ?? ""} className="focus:bg-academic-green focus:text-academic-black text-[10px] font-bold uppercase tracking-wider cursor-pointer">
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={selectedTemplate || "all"} onValueChange={(val) => setSelectedTemplate(val === "all" ? "" : val)}>
+          <SelectTrigger className="cursor-pointer w-full border-0 border-b-2 border-academic-black bg-academic-white py-2 px-0 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors focus:ring-0 focus:border-academic-black focus:outline-none md:w-48 rounded-none h-auto min-h-[34px] shadow-none">
+            <SelectValue placeholder="ALL TEMPLATES" />
+          </SelectTrigger>
+          <SelectContent className="bg-academic-white border-academic-black rounded-none">
+            <SelectItem value="all" className="focus:bg-academic-green focus:text-academic-black text-[10px] font-bold uppercase tracking-wider cursor-pointer">ALL TEMPLATES</SelectItem>
+            {uniqueTemplates.map((tpl) => (
+              <SelectItem key={tpl} value={tpl ?? ""} className="focus:bg-academic-green focus:text-academic-black text-[10px] font-bold uppercase tracking-wider cursor-pointer">
+                {tpl}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
 
-
-      {/* Middle Content */}
-      <section
-        className={`${isMobileMenuOpen ? "hidden" : "flex"} flex-1 flex-col overflow-y-auto bg-academic-white p-4 md:flex md:p-8 text-academic-black`}
-      >
-        <div className="mb-6 flex flex-col gap-6 md:mb-8 w-full max-w-6xl mx-auto">
-          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <h1 className="text-xl font-bold tracking-widest text-academic-black uppercase md:text-3xl">
-              Generated Documents
-            </h1>
-            <div className="text-[10px] font-bold tracking-wider text-academic-black/60">
-              TOTAL: {filteredDocs.length}
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div className="hidden w-full flex-col gap-4 md:flex">
-            <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-              <input
-                type="text"
-                placeholder="SEARCH DOCUMENTS..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 w-full border-b-2 border-academic-black bg-transparent py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase placeholder-academic-black/50 transition-colors focus:border-academic-black focus:outline-none"
-              />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="cursor-pointer w-full border-b-2 border-academic-black bg-transparent py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors focus:border-academic-black focus:outline-none md:w-48 appearance-none"
-              >
-                <option value="" className="bg-academic-white text-academic-black">
-                  ALL CATEGORIES
-                </option>
-                {uniqueCategories.map((cat) => (
-                  <option key={cat} value={cat} className="bg-academic-white text-academic-black">
-                    {cat}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={selectedTemplate}
-                onChange={(e) => setSelectedTemplate(e.target.value)}
-                className="cursor-pointer w-full border-b-2 border-academic-black bg-transparent py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors focus:border-academic-black focus:outline-none md:w-48 appearance-none"
-              >
-                <option value="" className="bg-academic-white text-academic-black">
-                  ALL TEMPLATES
-                </option>
-                {uniqueTemplates.map((tpl) => (
-                  <option key={tpl} value={tpl} className="bg-academic-white text-academic-black">
-                    {tpl}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="flex flex-1 items-center justify-center text-[10px] font-bold tracking-wider text-academic-black uppercase">
+          LOADING...
         </div>
-
-        <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col">
-          {isLoading ? (
-            <div className="flex flex-1 items-center justify-center text-[10px] font-bold tracking-wider text-academic-black uppercase">
-              LOADING...
-            </div>
-          ) : filteredDocs.length > 0 ? (
-            <div className="w-full overflow-x-auto border-t border-academic-black bg-academic-white">
-              <table className="w-full text-left text-xs text-academic-black">
-                <thead className="border-b border-academic-black bg-academic-white text-[10px] font-bold tracking-wider text-academic-black uppercase">
-                  <tr>
-                    <th className="px-6 py-4">DOCUMENT ID</th>
-                    <th className="px-6 py-4">NAME / NO RM</th>
-                    <th className="px-6 py-4">TEMPLATE NAME</th>
-                    <th className="px-6 py-4">CATEGORY</th>
-                    <th className="px-6 py-4">CREATED BY</th>
-                    <th className="px-6 py-4">CREATED AT</th>
-                    <th className="px-6 py-4 text-right">ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDocs.map((doc) => {
-                    const docData =
-                      typeof doc.data === "string"
-                        ? JSON.parse(doc.data)
-                        : doc.data;
-                    const nameOrNoRm = docData.name || docData.rm_number || "-";
-                    return (
-                      <tr
-                        key={doc.id}
-                        onClick={() => router.push(`/documents/${doc.id}`)}
-                        className="group cursor-pointer border-b border-academic-black transition-colors hover:bg-academic-green"
+      ) : filteredDocs.length > 0 ? (
+        <div className="w-full overflow-x-auto border-t border-academic-black bg-academic-white">
+          <Table className="w-full text-left text-xs text-academic-black">
+            <TableHeader className="border-b border-academic-black bg-academic-white text-[10px] font-bold tracking-wider text-academic-black uppercase hover:bg-transparent">
+              <TableRow className="border-academic-black hover:bg-transparent">
+                <TableHead className="px-6 py-4 h-auto text-academic-black">DOCUMENT ID</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-academic-black">NAME / NO RM</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-academic-black">TEMPLATE NAME</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-academic-black">CATEGORY</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-academic-black">CREATED BY</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-academic-black">CREATED AT</TableHead>
+                <TableHead className="px-6 py-4 h-auto text-right text-academic-black">ACTION</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDocs.map((doc) => {
+                const docData =
+                  typeof doc.data === "string"
+                    ? JSON.parse(doc.data)
+                    : doc.data;
+                const nameOrNoRm = docData.name || docData.rm_number || "-";
+                return (
+                  <TableRow
+                    key={doc.id}
+                    onClick={() => router.push(`/documents/${doc.id}`)}
+                    className="group cursor-pointer border-b border-academic-black transition-colors hover:bg-academic-green"
+                  >
+                    <TableCell className="px-6 py-4 text-[10px] text-academic-black/60">
+                      {doc.id.split("-")[0]}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
+                      {nameOrNoRm}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
+                      {doc.template?.title || "Unknown Template"}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-[10px] font-bold tracking-wider text-academic-black/80 uppercase">
+                      {doc.template?.category || "N/A"}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-[10px] font-bold text-academic-black/80">
+                      {doc.createdBy?.name ??
+                        doc.createdBy?.email ??
+                        "Unknown"}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-[10px] text-academic-black/60">
+                      {new Date(doc.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right align-middle">
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-block"
                       >
-                        <td className="px-6 py-4 text-[10px] text-academic-black/60">
-                          {doc.id.split("-")[0]}
-                        </td>
-                        <td className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
-                          {nameOrNoRm}
-                        </td>
-                        <td className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
-                          {doc.template?.title || "Unknown Template"}
-                        </td>
-                        <td className="px-6 py-4 text-[10px] font-bold tracking-wider text-academic-black/80 uppercase">
-                          {doc.template?.category || "N/A"}
-                        </td>
-                        <td className="px-6 py-4 text-[10px] font-bold text-academic-black/80">
-                          {doc.createdBy?.name ??
-                            doc.createdBy?.email ??
-                            "Unknown"}
-                        </td>
-                        <td className="px-6 py-4 text-[10px] text-academic-black/60">
-                          {new Date(doc.createdAt).toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <a
-                            href={`/api/documents/${doc.id}/download`}
-                            className="inline-flex items-center gap-2 border border-academic-black bg-academic-white px-4 py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors hover:bg-academic-black hover:text-academic-white"
-                          >
-                            DOWNLOAD <span>↓</span>
-                          </a>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="flex flex-1 items-center justify-center border-t border-dashed border-academic-black text-xs font-bold tracking-wider text-academic-black/60 uppercase">
-              No documents found.
-            </div>
-          )}
+                        <a
+                          href={`/api/documents/${doc.id}/download`}
+                          className="inline-flex items-center gap-2 border border-academic-black bg-academic-white px-4 py-2 text-[10px] font-bold tracking-wider text-academic-black uppercase transition-colors hover:bg-academic-black hover:text-academic-white"
+                        >
+                          DOWNLOAD <span>↓</span>
+                        </a>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
-      </section>
-    </main>
+      ) : (
+        <div className="flex flex-1 items-center justify-center border-t border-dashed border-academic-black text-xs font-bold tracking-wider text-academic-black/60 uppercase">
+          No documents found.
+        </div>
+      )}
+
+    </section>
   );
 }

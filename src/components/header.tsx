@@ -44,7 +44,7 @@ export function Header() {
         onValueChange={(val) => void setSelectedTemplateId(val)}
         disabled={isLoading}
       >
-        <SelectTrigger className="border-academic-black w-full rounded-none bg-transparent font-mono text-[10px] font-bold tracking-widest uppercase md:w-[400px]">
+        <SelectTrigger className="border-academic-black w-full rounded-none bg-academic-white font-mono text-[10px] font-bold tracking-widest uppercase md:w-[400px]">
           <SelectValue
             placeholder={isLoading ? "LOADING..." : "SELECT A TEMPLATE"}
           />
@@ -93,7 +93,7 @@ export function Header() {
                   {session.user.email}
                 </span>
                 <div className="flex gap-1 mt-1">
-                  {(session.user as any).role && (
+                  {session.user.role && (
                     <span className="bg-academic-green px-1 text-[8px] border border-academic-black uppercase">{(session.user as any).role}</span>
                   )}
                   {(session.user as any).room && (
@@ -102,6 +102,18 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-academic-black/20" />
+              <DropdownMenuItem
+                asChild
+                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+              >
+                <Link href="/admin/templates">Manage Templates</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                asChild
+                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+              >
+                <Link href="/admin/templates">Template</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 asChild
                 className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"

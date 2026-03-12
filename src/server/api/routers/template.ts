@@ -8,6 +8,7 @@ import {
 import { documentTemplate, templateField } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
+import { del } from "@vercel/blob";
 
 export const templateRouter = createTRPCRouter({
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -172,6 +173,18 @@ export const templateRouter = createTRPCRouter({
     delete: protectedProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
+            const template = await ctx.db.query.documentTemplate.findFirst({
+                where: eq(documentTemplate.id, input.id),
+            });
+
+            if (template?.filePath) {
+                try {
+                    await del(template.filePath);
+                } catch (error) {
+                    console.error("Failed to delete blob from vercel:", error);
+                }
+            }
+
             // Delete fields first due to foreign key constraints, just to be safe
             await ctx.db.delete(templateField).where(eq(templateField.templateId, input.id));
             await ctx.db.delete(documentTemplate).where(eq(documentTemplate.id, input.id));

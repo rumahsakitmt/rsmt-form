@@ -14,9 +14,11 @@ export default async function MainLayout({
   return (
     <div className="flex  flex-col overflow-hidden">
       <Header />
-      <div id="main-scroll-container" className="relative flex-1 overflow-y-auto bg-white p-4 font-sans text-sm md:p-8">
+      <div id="main-scroll-container" className="relative flex-1 overflow-y-auto bg-academic-white  p-4 font-sans text-sm md:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(17,17,17,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(17,17,17,0.06)_1px,transparent_1px)] bg-[size:32px_32px]" />
-        {children}
+        <div className="relative z-10">
+          {children}
+        </div>
         <BackToTop />
       </div>
     </div>

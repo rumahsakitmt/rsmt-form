@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { api } from "@/trpc/react";
-import { authClient } from "@/server/better-auth/client";
 import { useParams } from "next/navigation";
 
 export default function DocumentDetailPage() {
@@ -10,7 +9,6 @@ export default function DocumentDetailPage() {
   const id = params.id as string;
 
   const { data: documents = [], isLoading } = api.document.getAll.useQuery();
-  const { data: session } = authClient.useSession();
 
   const doc = documents.find((d) => d.id === id);
 
