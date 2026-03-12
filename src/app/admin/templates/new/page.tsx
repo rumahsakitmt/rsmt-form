@@ -4,6 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PizZip from "pizzip";
 import { api } from "@/trpc/react";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function NewTemplatePage() {
     const router = useRouter();
@@ -204,19 +213,19 @@ export default function NewTemplatePage() {
                 <div className="flex flex-col gap-8">
                     <div>
                         <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Title</label>
-                        <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. General Consent" />
+                        <Input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors border-t-0 border-l-0 border-r-0 rounded-none h-auto ring-0 focus-visible:ring-0 focus-visible:border-academic-green shadow-none" placeholder="e.g. General Consent" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                         <div>
                             <label className="text-[10px] font-bold text-academic-black/60 mb-2 uppercase tracking-widest bg-academic-black/5 px-2 py-1 inline-block border border-academic-black/20">Room</label>
-                            <input required type="text" value={room} onChange={(e) => setRoom(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors" placeholder="e.g. UP3" />
+                            <Input required type="text" value={room} onChange={(e) => setRoom(e.target.value)} className="w-full bg-transparent border-b-2 border-academic-black p-3 text-academic-black font-bold uppercase focus:border-academic-green outline-none transition-colors border-t-0 border-l-0 border-r-0 rounded-none h-auto ring-0 focus-visible:ring-0 focus-visible:border-academic-green shadow-none" placeholder="e.g. UP3" />
                         </div>
                     </div>
 
                     <div className="border border-academic-black bg-academic-green p-4 shadow-[4px_4px_0px_#111111]">
                         <label className="block text-[10px] font-bold text-academic-black mb-4 uppercase tracking-widest">Document Template (.docx)</label>
-                        <input required type="file" accept=".docx" onChange={handleFileChange} className="w-full bg-academic-white border border-academic-black p-3 text-academic-black font-mono text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-none file:border file:border-academic-black file:bg-academic-black file:text-academic-white file:font-bold file:uppercase file:text-[10px] file:tracking-widest cursor-pointer hover:file:bg-academic-white hover:file:text-academic-black file:transition-colors" />
+                        <Input required type="file" accept=".docx" onChange={handleFileChange} className="w-full bg-academic-white border border-academic-black p-3 text-academic-black font-mono text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-none file:border file:border-academic-black file:bg-academic-black file:text-academic-white file:font-bold file:uppercase file:text-[10px] file:tracking-widest cursor-pointer hover:file:bg-academic-white hover:file:text-academic-black file:transition-colors ring-0 focus-visible:ring-0 shadow-none h-auto rounded-none" />
                     </div>
                 </div>
 
@@ -235,14 +244,14 @@ export default function NewTemplatePage() {
                                         <span className="text-[10px] font-bold text-academic-black/60 uppercase tracking-widest mb-1 block">Variable</span>
                                         <div className="flex items-center">
                                             <span className="text-academic-black/40 font-mono text-sm mr-1">{"{{"}</span>
-                                            <input type="text" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-mono text-sm focus:border-academic-green outline-none" />
+                                            <Input type="text" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-mono text-sm focus:border-academic-green outline-none border-t-0 border-l-0 border-r-0 rounded-none h-auto ring-0 focus-visible:ring-0 focus-visible:border-academic-green shadow-none" />
                                             <span className="text-academic-black/40 font-mono text-sm ml-1">{"}}"}</span>
                                         </div>
                                     </div>
 
                                     <div className="w-full md:w-1/3">
                                         <label className="block text-[10px] font-bold text-academic-black/60 uppercase tracking-widest mb-1">UI Label</label>
-                                        <input type="text" value={field.label} onChange={(e) => handleFieldChange(index, 'label', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs focus:border-academic-green outline-none" />
+                                        <Input type="text" value={field.label} onChange={(e) => handleFieldChange(index, 'label', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs focus:border-academic-green outline-none border-t-0 border-l-0 border-r-0 rounded-none h-auto ring-0 focus-visible:ring-0 focus-visible:border-academic-green shadow-none" />
                                     </div>
 
                                     <div className="w-full md:w-1/4">
@@ -252,20 +261,26 @@ export default function NewTemplatePage() {
                                                 Array (Repeat)
                                             </div>
                                         ) : (
-                                            <select value={field.fieldType} onChange={(e) => handleFieldChange(index, 'fieldType', e.target.value)} className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs focus:border-academic-green outline-none appearance-none cursor-pointer">
-                                                <option value="text">TEXT</option>
-                                                <option value="date">DATE</option>
-                                                <option value="signature">SIGNATURE</option>
-                                            </select>
+                                            <Select value={field.fieldType} onValueChange={(val) => handleFieldChange(index, 'fieldType', val)}>
+                                                <SelectTrigger className="w-full bg-transparent border-b border-academic-black p-1 text-academic-black font-bold uppercase text-xs outline-none cursor-pointer border-t-0 border-l-0 border-r-0 rounded-none h-auto ring-0 focus:ring-0 focus:border-academic-green shadow-none px-0 py-1">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-academic-white border-academic-black rounded-none shadow-[4px_4px_0px_#111111]">
+                                                    <SelectItem value="text" className="focus:bg-academic-green focus:text-academic-black text-xs font-bold uppercase tracking-wider cursor-pointer">TEXT</SelectItem>
+                                                    <SelectItem value="date" className="focus:bg-academic-green focus:text-academic-black text-xs font-bold uppercase tracking-wider cursor-pointer">DATE</SelectItem>
+                                                    <SelectItem value="signature" className="focus:bg-academic-green focus:text-academic-black text-xs font-bold uppercase tracking-wider cursor-pointer">SIGNATURE</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         )}
                                     </div>
 
                                     <div className="flex items-center md:pt-6">
                                         <label className="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-academic-black uppercase tracking-widest group">
-                                            <div className="relative flex items-center justify-center">
-                                                <input type="checkbox" checked={field.isRequired} onChange={(e) => handleFieldChange(index, 'isRequired', e.target.checked)} className="peer appearance-none w-4 h-4 border border-academic-black bg-academic-white checked:bg-academic-green cursor-pointer transition-colors" />
-                                                <svg className="absolute w-3 h-3 text-academic-black pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="square" strokeLinejoin="miter"><polyline points="20 6 9 17 4 12" /></svg>
-                                            </div>
+                                            <Checkbox 
+                                                checked={field.isRequired} 
+                                                onCheckedChange={(checked) => handleFieldChange(index, 'isRequired', !!checked)} 
+                                                className="w-4 h-4 border border-academic-black bg-academic-white data-[state=checked]:bg-academic-green data-[state=checked]:text-academic-black rounded-none shadow-none" 
+                                            />
                                             Required
                                         </label>
                                     </div>
