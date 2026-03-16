@@ -70,6 +70,7 @@ export const templateRouter = createTRPCRouter({
                         label: z.string(),
                         fieldType: z.string(),
                         parentId: z.string().optional(),
+                        description: z.string().optional(),
                         isRequired: z.boolean(),
                         order: z.number(),
                         id: z.string().optional(),
@@ -101,6 +102,7 @@ export const templateRouter = createTRPCRouter({
                     label: field.label,
                     fieldType: field.fieldType,
                     parentId: field.parentId,
+                    description: field.description ?? null,
                     isRequired: field.isRequired,
                     order: field.order,
                 }));
@@ -128,6 +130,7 @@ export const templateRouter = createTRPCRouter({
                         label: z.string(),
                         fieldType: z.string(),
                         parentId: z.string().optional(),
+                        description: z.string().optional(),
                         isRequired: z.boolean(),
                         order: z.number(),
                         id: z.string().optional(),
@@ -161,6 +164,7 @@ export const templateRouter = createTRPCRouter({
                     label: field.label,
                     fieldType: field.fieldType,
                     parentId: field.parentId,
+                    description: field.description ?? null,
                     isRequired: field.isRequired,
                     order: field.order,
                 }));

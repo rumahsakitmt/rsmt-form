@@ -64,6 +64,19 @@ export async function GET(
       modules: [imageModule],
     });
 
+    const isDateString = (val: unknown): val is string => {
+      if (typeof val !== "string") return false;
+      return /^\d{4}-\d{2}-\d{2}(T.*)?$/.test(val) && !isNaN(Date.parse(val));
+    };
+
+    const formatDate = (val: string): string => {
+      const d = new Date(val);
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
     const cleanDataObj = (obj: unknown): unknown => {
       if (Array.isArray(obj)) {
         return obj.map((item) => cleanDataObj(item));
@@ -75,6 +88,7 @@ export async function GET(
         }
         return cleaned;
       }
+      if (isDateString(obj)) return formatDate(obj);
       return obj;
     };
 
@@ -90,11 +104,13 @@ export async function GET(
     });
 
     // Return the document buffer as response with correct headers for Word files
+    const today = new Date().toLocaleDateString("id-ID").split("/").join("-");
+
     return new NextResponse(buf as unknown as BodyInit, {
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `attachment; filename="dokumen-${template.title.replace(/\s+/g, "-").toLowerCase()}.docx"`,
+        "Content-Disposition": `attachment; filename="dokumen-${today}-${template.title.replace(/\s+/g, "-").toLowerCase()}.docx"`,
       },
       status: 200,
     });

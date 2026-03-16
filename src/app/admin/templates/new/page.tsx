@@ -30,6 +30,7 @@ export default function NewTemplatePage() {
       isRequired: boolean;
       order: number;
       parentId?: string;
+      description?: string;
     }[]
   >([]);
   const [loading, setLoading] = useState(false);
@@ -85,6 +86,7 @@ export default function NewTemplatePage() {
           order: number;
           id: string;
           parentId?: string;
+          description?: string;
         };
 
         const elements: FieldDefinition[] = [];
@@ -185,6 +187,7 @@ export default function NewTemplatePage() {
         fieldType: "text",
         isRequired: false,
         order: extractedFields.length,
+        description: "",
       },
     ]);
   };
@@ -229,7 +232,10 @@ export default function NewTemplatePage() {
         status: "ACTIVE",
         fileName,
         filePath,
-        fields: extractedFields,
+        fields: extractedFields.map((f) => ({
+          ...f,
+          description: f.description ?? undefined,
+        })),
       });
 
       router.push("/");
@@ -361,6 +367,18 @@ export default function NewTemplatePage() {
                         handleFieldChange(index, "label", e.target.value)
                       }
                       className="border-academic-black text-academic-black focus:border-academic-green focus-visible:border-academic-green h-auto w-full rounded-none border-t-0 border-r-0 border-b border-l-0 bg-transparent p-1 text-xs font-bold uppercase shadow-none ring-0 outline-none focus-visible:ring-0"
+                    />
+                    <label className="text-academic-black/60 mt-3 mb-1 block text-[10px] font-bold tracking-widest uppercase">
+                      Description / Hint
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={field.description ?? ""}
+                      onChange={(e) =>
+                        handleFieldChange(index, "description", e.target.value)
+                      }
+                      placeholder="e.g. Enter the patient's full legal name"
+                      className="border-academic-black text-academic-black focus:border-academic-green h-auto w-full resize-none rounded-none border-t-0 border-r-0 border-b border-l-0 bg-transparent p-1 font-mono text-xs shadow-none ring-0 outline-none focus-visible:ring-0 placeholder:text-[#999]"
                     />
                   </div>
 

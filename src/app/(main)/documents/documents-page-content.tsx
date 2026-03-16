@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { api } from "@/trpc/react";
+import { formatDate } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -224,7 +225,7 @@ export function DocumentsPageContent() {
                       {doc.createdBy?.name ?? doc.createdBy?.email ?? "Unknown"}
                     </TableCell>
                     <TableCell className="text-academic-black/60 px-6 py-4 text-[10px]">
-                      {new Date(doc.createdAt).toLocaleString()}
+                      {formatDate(doc.createdAt)}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right align-middle">
                       <div

@@ -187,6 +187,7 @@ export const templateField = sqliteTable("template_field", (d) => ({
   label: d.text({ length: 255 }).notNull(), // UI label, e.g., 'Patient Name'
   fieldType: d.text({ length: 50 }).notNull().default("text"), // 'text', 'date', 'signature', 'number', 'array'
   parentId: d.text({ length: 255 }), // If this field belongs to an array field
+  description: d.text(), // Optional hint/guide shown to users when filling the form
   isRequired: d.integer({ mode: "boolean" }).default(true),
   order: d.integer().default(0),
   createdAt: d

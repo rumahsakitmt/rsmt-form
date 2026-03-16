@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
+import { formatDate } from "@/lib/utils";
+
+function isDateString(val: unknown): val is string {
+  if (typeof val !== "string") return false;
+  // Match ISO 8601 or plain YYYY-MM-DD
+  return /^\d{4}-\d{2}-\d{2}(T.*)?$/.test(val) && !isNaN(Date.parse(val));
+}
 
 export default function DocumentDetailPage() {
   const params = useParams();
@@ -62,7 +69,7 @@ export default function DocumentDetailPage() {
           </h1>
           <p className="text-academic-black/60 mt-4 text-[10px] font-bold tracking-widest uppercase">
             {doc.template?.category || "N/A"} • Created{" "}
-            {new Date(doc.createdAt).toLocaleString()}
+            {formatDate(doc.createdAt)}
           </p>
         </div>
 
@@ -114,7 +121,7 @@ export default function DocumentDetailPage() {
                                 {k.replace(/_/g, " ")}
                               </div>
                               {typeof v === "string" &&
-                              v.startsWith("data:image") ? (
+                                v.startsWith("data:image") ? (
                                 <img
                                   src={v}
                                   alt={k}
@@ -122,7 +129,7 @@ export default function DocumentDetailPage() {
                                 />
                               ) : (
                                 <div className="text-academic-black text-sm font-bold">
-                                  {String(v) || "-"}
+                                  {isDateString(v) ? formatDate(v) : (String(v) || "-")}
                                 </div>
                               )}
                             </div>
@@ -134,7 +141,7 @@ export default function DocumentDetailPage() {
                 ) : (
                   <div className="border-academic-black bg-academic-white border p-3 shadow-[4px_4px_0px_#48C796]">
                     <div className="text-academic-black text-sm font-bold">
-                      {String(value) || "-"}
+                      {isDateString(value) ? formatDate(value) : (String(value) || "-")}
                     </div>
                   </div>
                 )}
@@ -189,7 +196,7 @@ export default function DocumentDetailPage() {
                 Created At
               </div>
               <div className="text-academic-black truncate font-mono">
-                {new Date(doc.createdAt).toLocaleString()}
+                {formatDate(doc.createdAt)}
               </div>
             </div>
           </div>

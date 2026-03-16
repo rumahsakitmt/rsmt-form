@@ -14,6 +14,7 @@ type Props = {
     isRequired: boolean | null;
     order: number | null;
     parentId: string | null;
+    description?: string | null;
   }[];
   formData: Record<string, any>;
   onChange: (
@@ -87,6 +88,11 @@ export function DocxForm({
               HAPUS
             </button>
           </label>
+          {field.description && (
+            <p className="-mt-1 mb-1 font-mono text-[9px] tracking-wide text-[#888]">
+              {field.description}
+            </p>
+          )}
           {/* Inline canvas (hidden on small screens, shown on md+) */}
           <div className="border-academic-black relative z-20 hidden cursor-crosshair overflow-hidden rounded-none border bg-white md:block">
             <SignatureCanvas
@@ -156,6 +162,11 @@ export function DocxForm({
         >
           {field.label}
         </label>
+        {field.description && (
+          <p className="-mt-1 font-mono text-[9px] tracking-wide text-[#888]">
+            {field.description}
+          </p>
+        )}
         <input
           type={field.fieldType === "date" ? "date" : "text"}
           id={field.name}
