@@ -39,10 +39,10 @@ export const documentRouter = createTRPCRouter({
         const folderName =
           String(
             input.data.nama ??
-            input.data.name ??
-            input.data.NAMA ??
-            input.data.NAME ??
-            `${template.title} - ${today}`,
+              input.data.name ??
+              input.data.NAMA ??
+              input.data.NAME ??
+              `${template.title} - ${today}`,
           ) + ` - ${today}`;
 
         if (env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY) {
@@ -109,4 +109,49 @@ export const documentRouter = createTRPCRouter({
 
     return docs;
   }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.session.user;
+      if (user.role !== "admin") {
+        throw new Error("Unauthorized: Admin only");
+      }
+
+      const doc = await ctx.db.query.generatedDocument.findFirst({
+        where: eq(generatedDocument.id, input.id),
+      });
+
+      if (!doc) {
+        throw new Error("Document not found");
+      }
+
+      if (doc.driveFolderUrl) {
+        const match = doc.driveFolderUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+        const folderId = match?.[1];
+
+        if (folderId && env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY) {
+          try {
+            const auth = new google.auth.GoogleAuth({
+              credentials: {
+                client_email: env.GOOGLE_CLIENT_EMAIL,
+                private_key: env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+              },
+              scopes: ["https://www.googleapis.com/auth/drive"],
+            });
+
+            const drive = google.drive({ version: "v3", auth });
+            await drive.files.delete({ fileId: folderId });
+          } catch (error) {
+            console.error("Failed to delete Google Drive folder:", error);
+          }
+        }
+      }
+
+      await ctx.db
+        .delete(generatedDocument)
+        .where(eq(generatedDocument.id, input.id));
+
+      return { success: true };
+    }),
 });

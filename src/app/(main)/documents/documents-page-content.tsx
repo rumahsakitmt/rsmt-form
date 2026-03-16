@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { api } from "@/trpc/react";
 import { formatDate } from "@/lib/utils";
+import { authClient } from "@/server/better-auth/client";
 import {
   Select,
   SelectContent,
@@ -20,6 +21,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function DocumentsPageContent() {
   const router = useRouter();
@@ -29,10 +41,24 @@ export function DocumentsPageContent() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
 
+  const { data: session } = authClient.useSession();
+  const isAdmin = session?.user?.role === "admin";
+
+  const utils = api.useUtils();
   const { data: documents = [], isLoading: isDocsLoading } =
     api.document.getAll.useQuery();
 
+  const deleteMutation = api.document.delete.useMutation({
+    onSuccess: () => {
+      void utils.document.getAll.invalidate();
+    },
+  });
+
   const isLoading = isDocsLoading;
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate({ id });
+  };
 
   const uniqueCategories = Array.from(
     new Set(documents.map((d) => d.template?.category).filter(Boolean)),
@@ -233,7 +259,7 @@ export function DocumentsPageContent() {
                         tabIndex={0}
                         onClick={(e) => e.stopPropagation()}
                         onKeyDown={(e) => e.stopPropagation()}
-                        className="inline-block"
+                        className="inline-flex gap-2"
                       >
                         <a
                           href={`/api/documents/${doc.id}/download`}
@@ -241,6 +267,44 @@ export function DocumentsPageContent() {
                         >
                           DOWNLOAD <span>↓</span>
                         </a>
+                        {isAdmin && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-academic-white hover:text-academic-white inline-flex items-center gap-2 border border-red-600 px-4 py-2 text-[10px] font-bold tracking-wider text-red-600 uppercase transition-colors hover:bg-red-600"
+                              >
+                                DELETE <span>×</span>
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-academic-white border-academic-black rounded-none border-2 font-mono shadow-[8px_8px_0px_#111111]">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-academic-black font-bold tracking-widest uppercase">
+                                  Delete Document
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-academic-black/70">
+                                  Are you sure you want to delete this document?
+                                  This will also delete the folder in Google
+                                  Drive.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="border-academic-black hover:bg-academic-black/5 rounded-none border-2 text-xs font-bold tracking-widest uppercase">
+                                  Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(doc.id);
+                                  }}
+                                  className="rounded-none bg-red-600 text-xs font-bold tracking-widest text-white uppercase hover:bg-red-700"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
