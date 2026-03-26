@@ -189,22 +189,22 @@ export function DocxForm({
   // Find the refKey metadata for the expanded modal
   const expandedMeta = expandedSig
     ? (() => {
-        // Determine field name and parent info from refKey
-        const parts = expandedSig.split("_");
-        // refKey formats: "fieldName" or "parentName_index_fieldName"
-        if (parts.length >= 3) {
-          return {
-            fieldName: parts.slice(2).join("_"),
-            parentName: parts[0],
-            index: parseInt(parts[1] ?? "0"),
-          };
-        }
+      // Determine field name and parent info from refKey
+      const parts = expandedSig.split("_");
+      // refKey formats: "fieldName" or "parentName_index_fieldName"
+      if (parts.length >= 3) {
         return {
-          fieldName: expandedSig,
-          parentName: undefined,
-          index: undefined,
+          fieldName: parts.slice(2).join("_"),
+          parentName: parts[0],
+          index: parseInt(parts[1] ?? "0"),
         };
-      })()
+      }
+      return {
+        fieldName: expandedSig,
+        parentName: undefined,
+        index: undefined,
+      };
+    })()
     : null;
 
   return (
@@ -355,17 +355,6 @@ export function DocxForm({
             className="bg-academic-black border-academic-black flex flex-1 items-center justify-center gap-2 rounded-none border px-5 py-4 text-[10px] font-bold tracking-widest text-white uppercase transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading && submitAction === "save" ? "SAVING..." : "SAVE"}
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            onClick={() => setSubmitAction("download")}
-            className="text-academic-black border-academic-black hover:bg-academic-yellow flex flex-1 items-center justify-center gap-2 rounded-none border bg-white px-5 py-4 text-[10px] font-bold tracking-widest uppercase transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading && submitAction === "download"
-              ? "GENERATING..."
-              : "DOWNLOAD"}
-            {!loading && <span>↓</span>}
           </button>
         </div>
       </form>

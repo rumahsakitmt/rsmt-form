@@ -62,91 +62,94 @@ export function Header() {
         </SelectContent>
       </Select>
       <div className="flex items-center gap-6 font-mono text-[10px] font-bold tracking-widest">
-        <div className="text-academic-black hidden items-center gap-4 uppercase md:flex">
-          <Link
-            href="/documents"
-            className="transition-opacity hover:opacity-70"
-          >
-            Dokumen
-          </Link>
-        </div>
 
         {isPending ? (
           <div className="bg-academic-black/10 flex h-8 w-8 animate-pulse items-center justify-center rounded-full" />
         ) : session ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none">
-              <Avatar className="border-academic-black h-8 w-8 cursor-pointer border transition-opacity hover:opacity-80">
-                <AvatarImage src={session.user.image ?? ""} />
-                <AvatarFallback className="bg-academic-white text-academic-black font-sans text-xs">
-                  {session.user.name?.charAt(0).toUpperCase() || "?"}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="border-academic-black bg-academic-white w-56 rounded-none"
-            >
-              <DropdownMenuLabel className="text-academic-black flex flex-col gap-1 font-mono text-[10px] tracking-widest uppercase">
-                <span>{session.user.name ?? "User"}</span>
-                <span className="text-academic-black/60 block truncate text-[8px] lowercase">
-                  {session.user.email}
-                </span>
-                <div className="mt-1 flex gap-1">
-                  {session.user.role && (
-                    <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
-                      {(session.user as { role?: string }).role}
-                    </span>
-                  )}
-                  {(session.user as { room?: string }).room && (
-                    <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
-                      {(session.user as { room?: string }).room}
-                    </span>
-                  )}
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-academic-black/20" />
-              <DropdownMenuItem
-                asChild
-                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+          <>
+            <div className="text-academic-black hidden items-center gap-4 uppercase md:flex">
+              <Link
+                href="/documents"
+                className="transition-opacity hover:opacity-70"
               >
-                <Link href="/admin/templates">Manage Templates</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                asChild
-                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+                Dokumen
+              </Link>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none">
+                <Avatar className="border-academic-black h-8 w-8 cursor-pointer border transition-opacity hover:opacity-80">
+                  <AvatarImage src={session.user.image ?? ""} />
+                  <AvatarFallback className="bg-academic-white text-academic-black font-sans text-xs">
+                    {session.user.name?.charAt(0).toUpperCase() || "?"}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="border-academic-black bg-academic-white w-56 rounded-none"
               >
-                <Link href="/admin/templates">Template</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                asChild
-                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
-              >
-                <Link href="/admin/templates/new">Add Template</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                asChild
-                className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase md:hidden"
-              >
-                <Link href="/documents">Dokumen</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-academic-black/20" />
-              <DropdownMenuItem
-                className="cursor-pointer font-mono text-[10px] tracking-widest text-red-600 uppercase hover:bg-red-50 hover:text-red-700"
-                onClick={() => {
-                  void authClient.signOut({
-                    fetchOptions: {
-                      onSuccess: () => {
-                        window.location.href = "/login";
+                <DropdownMenuLabel className="text-academic-black flex flex-col gap-1 font-mono text-[10px] tracking-widest uppercase">
+                  <span>{session.user.name ?? "User"}</span>
+                  <span className="text-academic-black/60 block truncate text-[8px] lowercase">
+                    {session.user.email}
+                  </span>
+                  <div className="mt-1 flex gap-1">
+                    {session.user.role && (
+                      <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
+                        {(session.user as { role?: string }).role}
+                      </span>
+                    )}
+                    {(session.user as { room?: string }).room && (
+                      <span className="bg-academic-green border-academic-black border px-1 text-[8px] uppercase">
+                        {(session.user as { room?: string }).room}
+                      </span>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-academic-black/20" />
+                <DropdownMenuItem
+                  asChild
+                  className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+                >
+                  <Link href="/admin/templates">Manage Templates</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+                >
+                  <Link href="/admin/templates">Template</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase"
+                >
+                  <Link href="/admin/templates/new">Add Template</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  asChild
+                  className="hover:bg-academic-green hover:text-academic-black cursor-pointer font-mono text-[10px] tracking-widest uppercase md:hidden"
+                >
+                  <Link href="/documents">Dokumen</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-academic-black/20" />
+                <DropdownMenuItem
+                  className="cursor-pointer font-mono text-[10px] tracking-widest text-red-600 uppercase hover:bg-red-50 hover:text-red-700"
+                  onClick={() => {
+                    void authClient.signOut({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          window.location.href = "/login";
+                        },
                       },
-                    },
-                  });
-                }}
-              >
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                    });
+                  }}
+                >
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+
         ) : (
           <Button
             asChild

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { generatedDocument } from "@/server/db/schema";
 import crypto from "crypto";
 
@@ -10,7 +10,7 @@ import { documentTemplate } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const documentRouter = createTRPCRouter({
-  create: protectedProcedure
+  create: publicProcedure
     .input(
       z.object({
         templateId: z.string(),
@@ -20,12 +20,10 @@ export const documentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const documentId = crypto.randomUUID();
 
-      // Get user's room to attach to the document
-      const userRoom = ctx.session.user.room;
+      const userRoom = ctx.session ? ctx.session.user.room : "";
 
       let driveFolderUrl: string | null = null;
 
-      // Fetch template to check if it's UP3
       const template = await ctx.db.query.documentTemplate.findFirst({
         where: eq(documentTemplate.id, input.templateId),
       });
@@ -39,10 +37,10 @@ export const documentRouter = createTRPCRouter({
         const folderName =
           String(
             input.data.nama ??
-              input.data.name ??
-              input.data.NAMA ??
-              input.data.NAME ??
-              `${template.title} - ${today}`,
+            input.data.name ??
+            input.data.NAMA ??
+            input.data.NAME ??
+            `${template.title} - ${today}`,
           ) + ` - ${today}`;
 
         if (env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY) {
@@ -50,7 +48,6 @@ export const documentRouter = createTRPCRouter({
             const auth = new google.auth.GoogleAuth({
               credentials: {
                 client_email: env.GOOGLE_CLIENT_EMAIL,
-                // Need to replace escaped newlines with actual newlines in private key
                 private_key: env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
               },
               scopes: ["https://www.googleapis.com/auth/drive"],
@@ -85,7 +82,7 @@ export const documentRouter = createTRPCRouter({
         data: JSON.stringify(input.data),
         room: userRoom ?? null,
         driveFolderUrl: driveFolderUrl ?? null,
-        createdById: ctx.session.user.id,
+        createdById: ctx.session?.user.id ?? null,
       });
 
       return { id: documentId, driveFolderUrl };
