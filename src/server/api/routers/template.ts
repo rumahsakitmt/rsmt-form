@@ -12,13 +12,11 @@ import { del } from "@vercel/blob";
 
 export const templateRouter = createTRPCRouter({
     getAll: publicProcedure.query(async ({ ctx }) => {
-
-        let templates = await ctx.db.query.documentTemplate.findMany({
+        return await ctx.db.query.documentTemplate.findMany({
             orderBy: (templates, { desc }) => [desc(templates.createdAt)],
         });
 
 
-        return templates;
     }),
 
     getById: publicProcedure
