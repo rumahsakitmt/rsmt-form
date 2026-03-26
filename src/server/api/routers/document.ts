@@ -127,7 +127,8 @@ export const documentRouter = createTRPCRouter({
       }
 
       if (doc.driveFolderUrl) {
-        const match = doc.driveFolderUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+        const regex = /\/folders\/([a-zA-Z0-9_-]+)/;
+        const match = regex.exec(doc.driveFolderUrl);
         const folderId = match?.[1];
 
         if (folderId && env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY) {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/lib/utils";
@@ -95,10 +96,12 @@ export default function DocumentDetailPage() {
                 </div>
                 {typeof value === "string" && value.startsWith("data:image") ? (
                   <div className="border-academic-black bg-academic-white border p-4 shadow-[4px_4px_0px_#48C796]">
-                    <img
+                    <Image
                       src={value}
                       alt={key}
-                      className="border-academic-black max-h-32 border"
+                      width={128}
+                      height={128}
+                      className="border-academic-black max-h-32 border object-contain"
                     />
                   </div>
                 ) : Array.isArray(value) ? (
@@ -121,15 +124,19 @@ export default function DocumentDetailPage() {
                                 {k.replace(/_/g, " ")}
                               </div>
                               {typeof v === "string" &&
-                                v.startsWith("data:image") ? (
-                                <img
+                              v.startsWith("data:image") ? (
+                                <Image
                                   src={v}
                                   alt={k}
-                                  className="border-academic-black mt-2 max-h-24 border"
+                                  width={96}
+                                  height={96}
+                                  className="border-academic-black mt-2 max-h-24 border object-contain"
                                 />
                               ) : (
                                 <div className="text-academic-black text-sm font-bold">
-                                  {isDateString(v) ? formatDate(v) : (String(v) || "-")}
+                                  {isDateString(v)
+                                    ? formatDate(v)
+                                    : String(v) || "-"}
                                 </div>
                               )}
                             </div>
@@ -141,7 +148,9 @@ export default function DocumentDetailPage() {
                 ) : (
                   <div className="border-academic-black bg-academic-white border p-3 shadow-[4px_4px_0px_#48C796]">
                     <div className="text-academic-black text-sm font-bold">
-                      {isDateString(value) ? formatDate(value) : (String(value) || "-")}
+                      {isDateString(value)
+                        ? formatDate(value)
+                        : String(value) || "-"}
                     </div>
                   </div>
                 )}
