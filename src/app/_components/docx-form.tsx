@@ -176,7 +176,7 @@ export function DocxForm({
           onChange={(e) =>
             onChange(field.name, e.target.value, parentName, index)
           }
-          className="border-academic-black text-academic-black focus:border-academic-black focus:ring-academic-black rounded-none border bg-white p-3 font-mono text-[10px] font-bold tracking-widest uppercase placeholder-[#888]/50 focus:ring-1 focus:outline-none"
+          className="border-academic-black text-academic-black focus:border-academic-black focus:ring-academic-black rounded-none border bg-white p-3 font-mono text-[10px] font-bold tracking-widest placeholder-[#888]/50 focus:ring-1 focus:outline-none"
           placeholder={field.label}
           style={
             field.fieldType === "date" ? { colorScheme: "light" } : undefined
