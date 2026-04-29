@@ -24,7 +24,7 @@ export default function DocumentDetailPage() {
     return (
       <main className="bg-academic-white flex h-full flex-col items-center p-4 font-mono text-xs">
         <div className="text-academic-black font-bold tracking-wider uppercase">
-          Loading...
+          Memuat...
         </div>
       </main>
     );
@@ -34,13 +34,13 @@ export default function DocumentDetailPage() {
     return (
       <main className="bg-academic-white flex h-full flex-col items-center p-4 font-mono text-xs">
         <div className="text-academic-black font-bold tracking-wider uppercase">
-          Document not found
+          Dokumen tidak ditemukan
         </div>
         <Link
           href="/documents"
           className="text-academic-black/60 hover:text-academic-black mt-4"
         >
-          ← Back to Documents
+          ← Kembali ke Dokumen
         </Link>
       </main>
     );
@@ -60,16 +60,16 @@ export default function DocumentDetailPage() {
             className="border-academic-black text-academic-black hover:text-academic-black/60 inline-flex items-center gap-2 border-b-2 pb-1 text-[10px] font-bold tracking-widest uppercase transition-colors"
           >
             <span className="mb-[2px] leading-none">←</span>
-            <span>BACK TO DOCUMENTS</span>
+            <span>KEMBALI KE DOKUMEN</span>
           </Link>
         </div>
 
         <div className="mb-12">
           <h1 className="text-academic-black border-academic-green mb-2 inline-block border-b-4 pb-2 text-3xl font-bold tracking-widest uppercase md:text-5xl">
-            {doc.template?.title || "Document Details"}
+            {doc.template?.title || "Detail Dokumen"}
           </h1>
           <p className="text-academic-black/60 mt-4 text-[10px] font-bold tracking-widest uppercase">
-            {doc.template?.category || "N/A"} • Created{" "}
+            {doc.template?.category || "N/A"} • Dibuat{" "}
             {formatDate(doc.createdAt)}
           </p>
         </div>
@@ -78,13 +78,13 @@ export default function DocumentDetailPage() {
           <div className="border-academic-black mb-8 flex flex-col justify-between gap-4 border-b-2 pb-4 md:flex-row md:items-center">
             <h2 className="text-academic-black flex items-center gap-3 text-xl font-bold tracking-widest uppercase">
               <span className="bg-academic-green border-academic-black inline-block h-4 w-4 border"></span>
-              Form Data
+              Data Formulir
             </h2>
             <a
               href={`/api/documents/${doc.id}/download`}
               className="border-academic-black bg-academic-green text-academic-black hover:bg-academic-black hover:text-academic-white inline-flex items-center gap-2 border px-6 py-3 text-[10px] font-bold tracking-widest uppercase shadow-[4px_4px_0px_#111111] transition-colors hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#111111]"
             >
-              DOWNLOAD <span>↓</span>
+              UNDUH <span>↓</span>
             </a>
           </div>
 
@@ -112,7 +112,7 @@ export default function DocumentDetailPage() {
                         className="border-academic-black bg-academic-white relative border p-6"
                       >
                         <div className="bg-academic-green border-academic-black text-academic-black absolute -top-3 -left-3 border px-2 py-1 text-[10px] font-bold uppercase shadow-[2px_2px_0px_#111111]">
-                          Row {idx + 1}
+                          Baris {idx + 1}
                         </div>
                         {Object.entries(item as Record<string, unknown>).map(
                           ([k, v]) => (
@@ -162,12 +162,12 @@ export default function DocumentDetailPage() {
         <div className="border-academic-black bg-academic-green mt-12 mb-12 border p-6 shadow-[8px_8px_0px_#111111] md:p-8">
           <h2 className="text-academic-black border-academic-black mb-6 flex items-center gap-3 border-b-2 pb-4 text-xl font-bold tracking-widest uppercase">
             <span className="bg-academic-white border-academic-black inline-block h-4 w-4 border"></span>
-            Document Info
+            Info Dokumen
           </h2>
           <div className="grid grid-cols-1 gap-6 text-xs md:grid-cols-2 lg:grid-cols-3">
             <div className="border-academic-black bg-academic-white border p-4">
               <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
-                Document ID
+                ID Dokumen
               </div>
               <div
                 className="text-academic-black truncate font-mono"
@@ -186,7 +186,7 @@ export default function DocumentDetailPage() {
             </div>
             <div className="border-academic-black bg-academic-white border p-4">
               <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
-                Category
+                Kategori
               </div>
               <div className="text-academic-black truncate font-bold uppercase">
                 {doc.template?.category || "N/A"}
@@ -194,15 +194,15 @@ export default function DocumentDetailPage() {
             </div>
             <div className="border-academic-black bg-academic-white border p-4">
               <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
-                Created By
+                Dibuat Oleh
               </div>
               <div className="text-academic-black truncate font-bold">
-                {doc.createdBy?.name ?? doc.createdBy?.email ?? "Unknown"}
+                {doc.createdBy?.name ?? doc.createdBy?.email ?? "Tidak Diketahui"}
               </div>
             </div>
             <div className="border-academic-black bg-academic-white border p-4 lg:col-span-2">
               <div className="text-academic-black/60 border-academic-black mb-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase">
-                Created At
+                Tanggal Dibuat
               </div>
               <div className="text-academic-black truncate font-mono">
                 {formatDate(doc.createdAt)}
