@@ -23,7 +23,7 @@ export async function GET(
 
     if (!docRecord?.template) {
       return NextResponse.json(
-        { error: "Document not found" },
+        { error: "Dokumen tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -115,9 +115,9 @@ export async function GET(
       status: 200,
     });
   } catch (err: unknown) {
-    console.error("Error generating docx:", err);
+    console.error("Gagal menghasilkan docx:", err);
     return NextResponse.json(
-      { error: "Error generating document" },
+      { error: "Gagal menghasilkan dokumen" },
       { status: 500 },
     );
   }
