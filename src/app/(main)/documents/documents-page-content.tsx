@@ -60,6 +60,36 @@ export function DocumentsPageContent() {
     deleteMutation.mutate({ id });
   };
 
+  const getDocDate = (
+    docData: Record<string, unknown>,
+    keys: string[],
+  ): string | null => {
+    // 1. exact match
+    for (const key of keys) {
+      const val = docData[key];
+      if (val && typeof val === "string") return val;
+    }
+    // 2. fuzzy match (key contains any of the search terms)
+    const dataKeys = Object.keys(docData);
+    for (const key of keys) {
+      const matched = dataKeys.find(
+        (k) =>
+          k.toLowerCase().includes(key.toLowerCase()) &&
+          docData[k] &&
+          typeof docData[k] === "string",
+      );
+      if (matched) return docData[matched] as string;
+    }
+    return null;
+  };
+
+  const isExpired = (dateStr: string): boolean => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+
   const uniqueCategories = Array.from(
     new Set(documents.map((d) => d.template?.category).filter(Boolean)),
   );
@@ -101,7 +131,7 @@ export function DocumentsPageContent() {
       <div className="flex w-full flex-col items-center gap-4 md:flex-row">
         <input
           type="text"
-          placeholder="SEARCH DOCUMENTS..."
+          placeholder="CARI DOKUMEN..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border-academic-black bg-academic-white text-academic-black placeholder-academic-black/50 focus:border-academic-black w-full flex-1 border-b-2 py-2 text-[10px] font-bold tracking-wider uppercase transition-colors focus:outline-none"
@@ -111,14 +141,14 @@ export function DocumentsPageContent() {
           onValueChange={(val) => setSelectedCategory(val === "all" ? "" : val)}
         >
           <SelectTrigger className="border-academic-black bg-academic-white text-academic-black focus:border-academic-black h-auto min-h-[34px] w-full cursor-pointer rounded-none border-0 border-b-2 px-0 py-2 text-[10px] font-bold tracking-wider uppercase shadow-none transition-colors focus:ring-0 focus:outline-none md:w-48">
-            <SelectValue placeholder="ALL CATEGORIES" />
+            <SelectValue placeholder="SEMUA KATEGORI" />
           </SelectTrigger>
           <SelectContent className="bg-academic-white border-academic-black rounded-none">
             <SelectItem
               value="all"
               className="focus:bg-academic-green focus:text-academic-black cursor-pointer text-[10px] font-bold tracking-wider uppercase"
             >
-              ALL CATEGORIES
+              SEMUA KATEGORI
             </SelectItem>
             {uniqueCategories.map((cat) => (
               <SelectItem
@@ -136,14 +166,14 @@ export function DocumentsPageContent() {
           onValueChange={(val) => setSelectedTemplate(val === "all" ? "" : val)}
         >
           <SelectTrigger className="border-academic-black bg-academic-white text-academic-black focus:border-academic-black h-auto min-h-[34px] w-full cursor-pointer rounded-none border-0 border-b-2 px-0 py-2 text-[10px] font-bold tracking-wider uppercase shadow-none transition-colors focus:ring-0 focus:outline-none md:w-48">
-            <SelectValue placeholder="ALL TEMPLATES" />
+            <SelectValue placeholder="SEMUA TEMPLATE" />
           </SelectTrigger>
           <SelectContent className="bg-academic-white border-academic-black rounded-none">
             <SelectItem
               value="all"
               className="focus:bg-academic-green focus:text-academic-black cursor-pointer text-[10px] font-bold tracking-wider uppercase"
             >
-              ALL TEMPLATES
+              SEMUA TEMPLATE
             </SelectItem>
             {uniqueTemplates.map((tpl) => (
               <SelectItem
@@ -160,7 +190,7 @@ export function DocumentsPageContent() {
 
       {isLoading ? (
         <div className="text-academic-black flex flex-1 items-center justify-center text-[10px] font-bold tracking-wider uppercase">
-          LOADING...
+          MEMUAT...
         </div>
       ) : filteredDocs.length > 0 ? (
         <div className="border-academic-black bg-academic-white w-full overflow-x-auto border-t">
@@ -168,25 +198,22 @@ export function DocumentsPageContent() {
             <TableHeader className="border-academic-black bg-academic-white text-academic-black border-b text-[10px] font-bold tracking-wider uppercase hover:bg-transparent">
               <TableRow className="border-academic-black hover:bg-transparent">
                 <TableHead className="text-academic-black h-auto px-6 py-4">
-                  DOCUMENT ID
+                  NAMA / NO RM
                 </TableHead>
                 <TableHead className="text-academic-black h-auto px-6 py-4">
-                  NAME / NO RM
+                  NAMA TEMPLATE
                 </TableHead>
                 <TableHead className="text-academic-black h-auto px-6 py-4">
-                  TEMPLATE NAME
+                  DARI TANGGAL
                 </TableHead>
                 <TableHead className="text-academic-black h-auto px-6 py-4">
-                  CATEGORY
+                  SAMPAI TANGGAL
                 </TableHead>
                 <TableHead className="text-academic-black h-auto px-6 py-4">
-                  CREATED BY
-                </TableHead>
-                <TableHead className="text-academic-black h-auto px-6 py-4">
-                  CREATED AT
+                  TANGGAL DIBUAT
                 </TableHead>
                 <TableHead className="text-academic-black h-auto px-6 py-4 text-right">
-                  ACTION
+                  AKSI
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -200,15 +227,27 @@ export function DocumentsPageContent() {
                   (docData.name as string) ??
                   (docData.rm_number as string) ??
                   "-";
+                const fromDateValue = getDocDate(docData, [
+                  "dari",
+                  "from",
+                  "tanggal_mulai",
+                  "start_date",
+                  "date_from",
+                ]);
+                const toDateValue = getDocDate(docData, [
+                  "sampai",
+                  "to",
+                  "tanggal_selesai",
+                  "end_date",
+                  "date_to",
+                ]);
+                const expired = toDateValue ? isExpired(toDateValue) : false;
                 return (
                   <TableRow
                     key={doc.id}
                     onClick={() => router.push(`/documents/${doc.id}`)}
-                    className="group border-academic-black hover:bg-academic-green cursor-pointer border-b transition-colors"
+                    className={`group border-academic-black cursor-pointer border-b transition-colors ${expired ? "bg-yellow-100 hover:bg-yellow-200" : "hover:bg-academic-green"}`}
                   >
-                    <TableCell className="text-academic-black/60 px-6 py-4 text-[10px]">
-                      {doc.id.split("-")[0]}
-                    </TableCell>
                     <TableCell className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
                       <div className="flex flex-col gap-1">
                         <span>{nameOrNoRm}</span>
@@ -244,11 +283,11 @@ export function DocumentsPageContent() {
                     <TableCell className="px-6 py-4 text-[11px] font-bold tracking-wide uppercase">
                       {doc.template?.title || "Unknown Template"}
                     </TableCell>
-                    <TableCell className="text-academic-black/80 px-6 py-4 text-[10px] font-bold tracking-wider uppercase">
-                      {doc.template?.category || "N/A"}
+                    <TableCell className="text-academic-black/60 px-6 py-4 text-[10px]">
+                      {fromDateValue ? formatDate(fromDateValue) : "-"}
                     </TableCell>
-                    <TableCell className="text-academic-black/80 px-6 py-4 text-[10px] font-bold">
-                      {doc.createdBy?.name ?? doc.createdBy?.email ?? "Unknown"}
+                    <TableCell className="text-academic-black/60 px-6 py-4 text-[10px]">
+                      {toDateValue ? formatDate(toDateValue) : "-"}
                     </TableCell>
                     <TableCell className="text-academic-black/60 px-6 py-4 text-[10px]">
                       {formatDate(doc.createdAt)}
@@ -265,7 +304,7 @@ export function DocumentsPageContent() {
                           href={`/api/documents/${doc.id}/download`}
                           className="border-academic-black bg-academic-white text-academic-black hover:bg-academic-black hover:text-academic-white inline-flex items-center gap-2 border px-4 py-2 text-[10px] font-bold tracking-wider uppercase transition-colors"
                         >
-                          DOWNLOAD <span>↓</span>
+                          UNDUH <span>↓</span>
                         </a>
                         {isAdmin && (
                           <AlertDialog>
@@ -274,23 +313,23 @@ export function DocumentsPageContent() {
                                 onClick={(e) => e.stopPropagation()}
                                 className="bg-academic-white hover:text-academic-white inline-flex items-center gap-2 border border-red-600 px-4 py-2 text-[10px] font-bold tracking-wider text-red-600 uppercase transition-colors hover:bg-red-600"
                               >
-                                DELETE <span>×</span>
+                                HAPUS <span>×</span>
                               </button>
                             </AlertDialogTrigger>
                             <AlertDialogContent className="bg-academic-white border-academic-black rounded-none border-2 font-mono shadow-[8px_8px_0px_#111111]">
                               <AlertDialogHeader>
                                 <AlertDialogTitle className="text-academic-black font-bold tracking-widest uppercase">
-                                  Delete Document
+                                  Hapus Dokumen
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-academic-black/70">
-                                  Are you sure you want to delete this document?
-                                  This will also delete the folder in Google
+                                  Apakah Anda yakin ingin menghapus dokumen ini?
+                                  Ini juga akan menghapus folder di Google
                                   Drive.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel className="border-academic-black hover:bg-academic-black/5 rounded-none border-2 text-xs font-bold tracking-widest uppercase">
-                                  Cancel
+                                  Batal
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={(e) => {
@@ -299,7 +338,7 @@ export function DocumentsPageContent() {
                                   }}
                                   className="rounded-none bg-red-600 text-xs font-bold tracking-widest text-white uppercase hover:bg-red-700"
                                 >
-                                  Delete
+                                  Hapus
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -315,7 +354,7 @@ export function DocumentsPageContent() {
         </div>
       ) : (
         <div className="border-academic-black text-academic-black/60 flex flex-1 items-center justify-center border-t border-dashed text-xs font-bold tracking-wider uppercase">
-          No documents found.
+          Tidak ada dokumen.
         </div>
       )}
     </section>
